@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+
+<body>
+
+    <input value={{message}}>
+    <div id="app">
+        {{ message }}
+    </div>
+
+    <div id="appboo">
+        <span v-if="boo">你好呀 ,这是个vue的判断</span>
+    </div>
+
+    <div id="app_3">
+        <ol>
+            <li v-for="todo in todos">
+                <input type="text" v-model="todo.num">
+                <span>{{todo.text}}</span>
+                <button v-on:onclick="addcount">add</button>
+            </li>
+        </ol>
+        <span>总数是:{{todos.coutn}}</span>
+    </div>
+</body>
+
+</html>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!'
+        }
+    })
+    //判断
+    var app = new Vue({
+        el: '#appboo',
+        data: {
+            boo: true       //false
+        }
+    })
+
+    //循环
+    var app = new Vue({
+        el: '#app_3',
+        data: {
+            todos: [
+                { text: 'python', num: 1 },
+                { text: 'net', num: 1 },
+                { text: 'Vue', num: 1 }
+            ]
+        },
+        methods: {
+            addcount: function () {
+               this.data.num();
+            }
+        }
+    })
+
+
+
+
+</script>

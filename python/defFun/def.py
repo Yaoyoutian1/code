@@ -35,3 +35,9 @@ def as_ok(name:str, age=oldage, sex="男", remarks="这个男孩来自中国")->
 
 oldage=22
 as_ok('y')
+
+
+
+
+
+
