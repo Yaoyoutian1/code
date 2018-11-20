@@ -28,21 +28,8 @@
                 <button v-on:onclick="addcount">add</button>
             </li>
         </ol>
-        <span>总数是:{{addcount}}</span>
-        <br>
-        <input type="button" v-on:click="hello" value="点我呀!">
-        <input type="button" @click="hello" value="再点我呀!">
-        <br>
-        <a v-bind:href="url">菜鸟教程</a>
-        <a :href="url">菜鸟教程1</a>
-        <!--响应地更新 HTML 属性 -->
+        <span>总数是:{{todos.coutn}}</span>
     </div>
-
-    <div id="app_4">
-        <p>{{message|capitalize}}</p>
-    </div>
-
-
 </body>
 
 </html>
@@ -66,43 +53,22 @@
     var app_3 = new Vue({
         el: '#app_3',
         data: {
-            url: "http://www.runoob.com/",
             todos: [
                 { text: 'python', num: 1 },
                 { text: 'net', num: 1 },
                 { text: 'Vue', num: 1 }
             ]
         },
-        //方法函数
-        methods: {
-            hello: function () {
-                alert("点击我呀")
-            }
-        },
-        computed: {                 //计算属性  运用了缓存
+        component: {
             addcount: function () {
-                var sum = 0;
-                for (let i = 0; i < this.todos.length; i++) {
-                    sum += this.todos[i].num;
-                }
-                return sum;
+                return this.todos.render((text, num) => {
+
+                })
             }
         }
     })
 
-    var app_4 = new Vue({
-        el: "#app_4",
-        data: {
-            message: "about"
-        },
-        //过滤器
-        filters: {
-            capitalize: function (value) {
-                if (!value) return ''
-                value = value.toString()
-                return value.charAt(0).toUpperCase() + value.slice(1)
-            }
-        }
-    })
+
+
 
 </script>
