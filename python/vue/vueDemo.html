@@ -73,6 +73,7 @@
                 { text: 'Vue', num: 1 }
             ]
         },
+<<<<<<< HEAD
         //方法函数
         methods: {
             hello: function () {
@@ -86,6 +87,13 @@
                     sum += this.todos[i].num;
                 }
                 return sum;
+=======
+        component: {
+            addcount: function () {
+                return this.todos.render((text, num) => {
+
+                })
+>>>>>>> a305311c04885d5f0a2cd141aab30e7cc5e74715
             }
         }
     })
