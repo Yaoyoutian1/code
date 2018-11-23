@@ -1,0 +1,23 @@
+create procedure proc_Test(in numa int ,in numb int,out sum int ,inout num int)
+lab:begin
+SELECT numa;
+SELECT numb;
+set num =numa+numb;
+set sum =numa+numb;
+end lab
+
+set @numa=1;
+set @numb=2;
+set @sum,@num
+call proc_Test(@numa,@numb,@sum,@num);
+
+
+create view view_log
+as
+SELECT a.UserId,a.UserName,a.Age,a.sex,b.SignNum,b.CreateTime
+from `User` a,User_Auths b WHERE a.UserId=b.UserId
+
+
+SELECT * from view_log
+UPDATE view_log set age=20 WHERE userid=2
+

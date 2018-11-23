@@ -1,0 +1,69 @@
+from email.header import Header
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart  import MIMEMultipart
+from email.mime.base import MIMEBase
+
+'''
+smtpObj = smtplib.SMTP( [host [, port [, local_hostname]]] )
+
+host: SMTP 服务器主机。 你可以指定主机的ip地址或者域名如: runoob.com，这个是可选参数。
+port: 如果你提供了 host 参数, 你需要指定 SMTP 服务使用的端口号，一般情况下 SMTP 端口号为25。
+local_hostname: 如果 SMTP 在你的本机上，你只需要指定服务器地址为 localhost 即可。
+'''
+
+
+'''
+email 对象 参考https://docs.python.org/2/library/email.mime.html#email.mime.base.MIMEBase
+SMTP.sendmail(from_addr, to_addrs, msg[, mail_options, rcpt_options])
+
+from_addr: 邮件发送者地址。
+to_addrs: 字符串列表，邮件发送地址。
+msg: 发送消息
+'''
+
+sender = 'yaoyt98@163.com'  # 发送邮件
+receivers = ['2860889218@qq.com','yaoyt98@163.com']  # 接受邮件
+
+# message = MIMEText('Python 邮件发送测试...', 'plain', 'utf-8')      #邮件内容
+# message = MIMEText("<a href='http://baidu.com'>点半我跳转哦</a>", 'html', 'utf-8')       #html
+message = MIMEMultipart()           #生成包括多个部分的邮件体
+# 发送图片 ,文字 ,文档
+path ='comert\imgs\阿狸\电玩女神 阿狸.jpg'
+with open(path,'rb') as f:
+    img = MIMEImage(f.read())
+    message.attach(img)
+
+text = MIMEText('阿狸的电玩女神的图片')
+message.attach(text)
+
+from email import encoders
+# 增加附件
+filename='新建文本文档'                         #附件名
+textpath=r'comert\text\新建文本文档.txt'
+with open(textpath,"rb") as fp:
+    mmtext= MIMEBase('application','octet-stream')  #这个是所有mime的基类   设置类型
+    mmtext.set_payload(fp.read())                   # 写入流
+    mmtext.add_header('Content-Disposition', 'attachment', filename=filename)   # 添加头部
+    encoders.encode_base64(mmtext)  # 改变编码
+    message.attach(mmtext)
+
+# message = MIMEText("<a href='http://baidu.com'>点半我跳转哦</a>", 'html', 'utf-8')       #html                                                    
+subject = 'Python 测试'                                 #标题
+message['Subject'] = Header(subject, 'utf-8')
+message['From'] = sender                                #一定是发件人的邮箱地址
+message['To'] = ','.join(receivers)                     #一定是收件人的邮箱地址  两个都要是地址不然会报554 邮件格式错误
+
+# import smtplib
+# smtpobj = smtplib.SMTP_SSL('smtp.163.com', 465)
+# smtpobj.login(sender, 'yaoyoutian2018')                 #
+
+# smtpobj.sendmail(sender, receivers, message.as_string())
+# smtpobj.quit()
+
+from smtplib import SMTP_SSL
+with SMTP_SSL('smtp.163.com', 465) as sp:       # 运用ssl发送
+    sp.login(sender, 'yaoyoutian2018')     
+    sp.sendmail(sender, receivers, message.as_string())
+
+print("邮件发送成功")

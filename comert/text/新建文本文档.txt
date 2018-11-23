@@ -1,0 +1,2674 @@
+4. 流程控制语句 
+除了 while 语句，Python还拥有在其他语言里常见的控制语句，以及一些好玩的语句。
+
+4.1.if 语句 
+也许最常见的语句类型是 if 语句.例如：
+
+>>>
+>>> x = int(input("Please enter an integer: "))
+Please enter an integer: 42
+>>> if x < 0:
+...     x = 0
+...     print('Negative changed to zero')
+... elif x == 0:
+...     print('Zero')
+... elif x == 1:
+...     print('Single')
+... else:
+...     print('More')
+...
+More
+可以有0个或多个 elif 块,，并且 else 块是可选的。关键字 ‘elif‘ 比 ‘else if’ 短,，并且可以避免过度缩进。一个if ... elif ... elif ...序列 是对其他语言的switch or case 语句的替代方案。
+
+4.2. for 语句
+Python 的 for 语句与你在 C 或者 Pascal 中使用的有一点区别。和常见的等差数列迭代（如 Pascal 中）或让用户能够自定义迭代步骤和停止条件（如 C）不一样，Python 的 for 语句可以按照元素出现的顺序迭代任何序列（列表或字符串）。例如：
+
+>>>
+>>> # Measure some strings:
+... words = ['cat', 'window', 'defenestrate']
+>>> for w in words:
+...     print(w, len(w))
+...
+cat 3
+window 6
+defenestrate 12
+如果要在循环内修改正在迭代的序列（例如，复制所选的项目），建议首先创建原序列的拷贝。迭代序列不会隐式地创建副本。 使用切片就可以很容易地做到：
+
+>>>
+>>> for w in words[:]:  # Loop over a slice copy of the entire list.
+...     if len(w) > 6:
+...         words.insert(0, w)
+...
+>>> words
+['defenestrate', 'cat', 'window', 'defenestrate']
+4.3. range() 函数 
+如果你确实需要遍历一个数字序列，内置函数 range() 会派上用场。它生成算术级数：
+
+>>>
+>>> for i in range(5):
+...     print(i)
+...
+0
+1
+2
+3
+4
+给定的终点不会包含在生成的序列中； range（10）会生成10个值，即长度为10的序列的项的合法索引。也可以让 range 函数从另一个数值开始，或者可以指定一个不同的步进值（甚至是负数，有时这也被称为‘步长’）：
+
+range(5, 10)
+   5 through 9
+
+range(0, 10, 3)
+   0, 3, 6, 9
+
+range(-10, -100, -30)
+  -10, -40, -70
+要迭代序列的索引，您可以将range()和len()组合如下：
+
+>>>
+>>> a = ['Mary', 'had', 'a', 'little', 'lamb']
+>>> for i in range(len(a)):
+...     print(i, a[i])
+...
+0 Mary
+1 had
+2 a
+3 little
+4 lamb
+然而，在大多数这类情况，一般使用 enumerate() 函数，请参见 循环技术。
+
+如果你只打印 range，会出现奇怪的结果：
+
+>>>
+>>> print(range(10))
+range(0, 10)
+在很多方面由 range() 返回的对象的行为就像它是一个列表，但事实上它不是。它是一个对象。当您遍历它时， 它会返回所需的序列连续项。但它并不真的生成了列表，从而节省了空间。
+
+我们说这样一个对象是iterable，就是说，它适合作为一个函数和结构的目标，而函数期望从中获得连续的项目，直到耗尽。我们已经看到 for 语句是这种 迭代器。list() 函数是另一个;它从可迭代量创建列表︰
+
+>>>
+>>> list(range(5))
+[0, 1, 2, 3, 4]
+后面我们会看到更多返回可迭代对象和以可迭代对象作为参数的函数。
+
+4.4. break和continue语句，以及循环中else子句
+break语句和 C 中的类似，用于跳出最近的 for 或 while 循环。
+
+循环语句可以有一个 else 子句;当（for）循环迭代完整个列表或（while）循环条件变为假，而非由break语句终止时，就会执行这个else语句。下面循环搜索质数的代码例示了这一点：
+
+>>>
+>>> for n in range(2, 10):
+...     for x in range(2, n):
+...         if n % x == 0:
+...             print(n, 'equals', x, '*', n//x)
+...             break
+...     else:
+...         # loop fell through without finding a factor
+...         print(n, 'is a prime number')
+...
+2 is a prime number
+3 is a prime number
+4 equals 2 * 2
+5 is a prime number
+6 equals 2 * 3
+7 is a prime number
+8 equals 2 * 4
+9 equals 3 * 3
+（是的，这是正确的代码。仔细看︰ else 子句属于 for 循环，不 是 if 语句的 。)
+
+与在if语句中的用法相比，循环中的else子句与try语句的else子句有更多的共同点：try语句的else子句在未出现异常时运行，循环的else子句在未出现break时运行。更多关于try语句和异常的内容，请参见 处理异常。
+
+continue语句，也是从C语言借来的，表示继续下一次迭代：
+
+>>>
+>>> for num in range(2, 10):
+...     if num % 2 == 0:
+...         print("Found an even number", num)
+...         continue
+...     print("Found a number", num)
+Found an even number 2
+Found a number 3
+Found an even number 4
+Found a number 5
+Found an even number 6
+Found a number 7
+Found an even number 8
+Found a number 9
+4.5.pass 语句 
+pass 语句什么也不做。当语法上需要语句但程序不需要动作时，可以使用它。例如：
+
+>>>
+>>> while True:
+...     pass  # Busy-wait for keyboard interrupt (Ctrl+C)
+...
+这通常用于创建最小的类：
+
+>>>
+>>> class MyEmptyClass:
+...     pass
+...
+另一个使用pass的地方是编写新代码时作为函数体或控制体的占位符，这让你在更抽象层次上思考。pass语句将被默默地忽略：
+
+>>>
+>>> def initlog(*args):
+...     pass   # Remember to implement this!
+...
+4.6. 定义函数 
+我们可以创建一个函数，将斐波纳契（Fibonacci）序列写入任意边界：
+
+>>>
+>>> def fib(n):    # write Fibonacci series up to n
+...     """Print a Fibonacci series up to n."""
+...     a, b = 0, 1
+...     while a < n:
+...         print(a, end=' ')
+...         a, b = b, a+b
+...     print()
+...
+>>> # Now call the function we just defined:
+... fib(2000)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597
+关键字 def 引入函数的定义。其后必须跟有函数名和以括号标明的形式参数列表。组成函数体的语句从下一行开始，且必须缩进。
+
+函数体的第一行可以是一个可选的字符串文本；此字符串是该函数的文档字符串，或称为docstring。（更多关于 docstrings 的内容可以在 文档字符串一节中找到。）有工具使用 docstrings 自动生成在线的或可打印的文档，或者让用户在代码中交互浏览；在您编写的代码中包含 docstrings 是很好的做法，所以让它成为习惯吧。
+
+执行 一个函数会引入一个用于函数的局部变量的新符号表。更确切地说，函数中的所有的赋值都是将值存储在局部符号表；而变量引用首先查找局部符号表，然后是上层函数的局部符号表，然后是全局符号表，最后是内置名字表。因此，在函数内部无法给一个全局变量直接赋值（除非在一个 global 语句中命名），虽然可以引用它们。
+
+当函数被调用时候，函数调用的实际参数被引入到被调用函数的局部（本地）符号表中；因此，参数传递通过 传值调用 （这里的 值 始终是对象的 引用，不是对象的值）。[1]一个函数调用另一个函数时，会为本次调用创建一个新的局部符号表。
+
+函数定义会在当前符号表内引入函数名。函数名对应的值的类型是解释器可识别的用户自定义函数。此值可以分配给另一个名称，然后该名称也可作为函数。这是通用的重命名机制：
+
+>>>
+>>> fib
+<function fib at 10042ed0>
+>>> f = fib
+>>> f(100)
+0 1 1 2 3 5 8 13 21 34 55 89
+如果你使用过其他语言，你可能会反对说：fib 不是一个函数，而是一个过程(子程序)，因为它并不返回任何值。事实上，没有return语句的函数也返回一个值，尽管是一个很无聊的值。此值被称为 None（它是一个内置的名称）。如果 None只是唯一的输出，解释器通常不会打印出来。如果你真的想看到这个值，可以使用 print 语句：
+
+>>>
+>>> fib(0)
+>>> print(fib(0))
+None
+写一个函数返回菲波那契数列的列表，而不是打印出来，非常简单：
+
+>>>
+>>> def fib2(n):  # return Fibonacci series up to n
+...     """Return a list containing the Fibonacci series up to n."""
+...     result = []
+...     a, b = 0, 1
+...     while a < n:
+...         result.append(a)    # see below
+...         a, b = b, a+b
+...     return result
+...
+>>> f100 = fib2(100)    # call it
+>>> f100                # write the result
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+此示例中，像往常一样，演示了一些新的 Python 功能：
+
+return 语句可以从函数中携带着返回值返回。return 语句不携带任何表达式参数时返回 None。如果一直执行到整个函数结束还没有碰到 return 语句，也返回 None。
+语句 result.append(a) 调用了列表result的一个 方法。方法是“属于”一个对象且名字叫做obj.methodname的函数，其中obj是某个对象（可能是个表达式），methodname是由该对象类型定义的方法的名称。不同类型定义了不同的方法。不同的类型的方法可以具有相同的名称而不引起歧义。（可以使用classes定义你自己的对象类型和方法，参见Classes）示例中显示的append() 方法是给列表对象定义的；它添加一个新的元素到列表的末尾。在这个示例中，它等同于result = result + [a]，但是它更高效。
+4.7. 更多关于定义函数 
+可以定义具有可变数目的参数的函数。有三种函数形式，可以结合使用。
+
+4.7.1. 默认参数值 
+最有用的形式是指定一个或多个参数的默认值。这种方法创建的函数被调用时，可以带有比定义的要少的参数。例如：
+
+def ask_ok(prompt, retries=4, reminder='Please try again!'):
+    while True:
+        ok = input(prompt)
+        if ok in ('y', 'ye', 'yes'):
+            return True
+        if ok in ('n', 'no', 'nop', 'nope'):
+            return False
+        retries = retries - 1
+        if retries < 0:
+            raise ValueError('invalid user response')
+        print(reminder)
+这个函数可以通过几种方式调用：
+
+只提供必须的参数: ask_ok('Do you really want to quit?')
+提供可选参数中的一个: ask_ok('OK to overwrite the file?', 2)
+或者提供所有参数: ask_ok('OK to overwrite the file?', 2, 'Come on, only yes or no!')
+上面示例中的in关键字，它测试一个序列是否包含特定的值。
+
+默认值在函数定义的时刻，在定义的作用域中计算，因此：
+
+i = 5
+
+def f(arg=i):
+    print(arg)
+
+i = 6
+f()
+会打印 5.
+
+重要的警告︰默认值只初始化一次。当默认值是一个可变对象（如列表，字典或大多数类的实例）时，默认值会不同。例如，下面的函数在后续调用过程中会累积传给它的参数：
+
+def f(a, L=[]):
+    L.append(a)
+    return L
+
+print(f(1))
+print(f(2))
+print(f(3))
+这将会打印
+
+[1]
+[1, 2]
+[1, 2, 3]
+如果你不想默认值在随后的调用中共享，可以像这样编写函数：
+
+def f(a, L=None):
+    if L is None:
+        L = []
+    L.append(a)
+    return L
+4.7.2. 关键字参数 
+函数还可以用kwarg=value形式的关键字参数调用。例如，下面的函数：
+
+def parrot(voltage, state='a stiff', action='voom', type='Norwegian Blue'):
+    print("-- This parrot wouldn't", action, end=' ')
+    print("if you put", voltage, "volts through it.")
+    print("-- Lovely plumage, the", type)
+    print("-- It's", state, "!")
+接受一个必需的参数 （voltage） 和三个可选参数 （state, action, and type）。可以用下列任意一种方式调用这个函数：
+
+parrot(1000)                                          # 1 positional argument
+parrot(voltage=1000)                                  # 1 keyword argument
+parrot(voltage=1000000, action='VOOOOOM')             # 2 keyword arguments
+parrot(action='VOOOOOM', voltage=1000000)             # 2 keyword arguments
+parrot('a million', 'bereft of life', 'jump')         # 3 positional arguments
+parrot('a thousand', state='pushing up the daisies')  # 1 positional, 1 keyword
+但下面的所有调用将无效：
+
+parrot()                     # required argument missing
+parrot(voltage=5.0, 'dead')  # non-keyword argument after a keyword argument
+parrot(110, voltage=220)     # duplicate value for the same argument
+parrot(actor='John Cleese')  # unknown keyword argument
+在函数调用中，关键字参数必须写在位置参数之后。传递的所有关键字参数必须匹配函数接收的参数中的一个（例如，actor不是parrot函数的合法参数），它们的顺序并不重要。这同样适用于非可选的参数（例如，parrot(voltage=1000)也是合法的）。任何参数都不可以多次赋值。下面的示例由于这种限制将失败：
+
+>>>
+>>> def function(a):
+...     pass
+...
+>>> function(0, a=0)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+TypeError: function() got multiple values for keyword argument 'a'
+如果在最后存在一个**name形式的形式参数，它将接收一个字典（参见映射类型——字典），这个字典包含除形式参数之外的所有关键字参数。它可以与*name形式的形式参数组合（在下一节讲述），这种形式接收一个元组，这个元组包含除形式参数之外的所有位置参数。(*name必须出现在**name之前）。例如，如果我们定义这样的函数：
+
+def cheeseshop(kind, *arguments, **keywords):
+    print("-- Do you have any", kind, "?")
+    print("-- I'm sorry, we're all out of", kind)
+    for arg in arguments:
+        print(arg)
+    print("-" * 40)
+    keys = sorted(keywords.keys())
+    for kw in keys:
+        print(kw, ":", keywords[kw])
+它可以这样被调用：
+
+cheeseshop("Limburger", "It's very runny, sir.",
+           "It's really very, VERY runny, sir.",
+           shopkeeper="Michael Palin",
+           client="John Cleese",
+           sketch="Cheese Shop Sketch")
+并且当然它会打印：
+
+-- Do you have any Limburger ?
+-- I'm sorry, we're all out of Limburger
+It's very runny, sir.
+It's really very, VERY runny, sir.
+----------------------------------------
+client : John Cleese
+shopkeeper : Michael Palin
+sketch : Cheese Shop Sketch
+注意，在打印关键字参数内容之前，它的名称列表是通过排序字典的keys()方法得到的关键字创建的；如果不这样做，打印出来的参数顺序将是未定义的。
+
+4.7.3. 任意参数的列表
+最后，最不常用的场景是指明某个函数可以被可变个数的参数调用。这些参数将被封装在一个元组中（参见元组和序列）。在可变数量的参数之前，可能出现零个或多个正常参数。
+
+def write_multiple_items(file, separator, *args):
+    file.write(separator.join(args))
+通常，这些可变的参数将位于形式参数列表的最后面，因为它们将剩下的传递给函数的所有输入参数都包含进去。出现在*args之后的任何形式参数都是“非关键字不可”的参数，意味着它们只能用作关键字参数而不能是位置参数。
+
+>>>
+>>> def concat(*args, sep="/"):
+...     return sep.join(args)
+...
+>>> concat("earth", "mars", "venus")
+'earth/mars/venus'
+>>> concat("earth", "mars", "venus", sep=".")
+'earth.mars.venus'
+4.7.4. 解包参数列表
+当传递的参数已经是一个列表或元组时，情况与之前相反，你要分拆这些参数，因为函数调用要求独立的位置参数。例如，内建的range()函数期待单独的start和stop参数。如果它们不能单独地获得，可以编写带有*操作的函数调用，来从一个列表或元组分拆出参数：
+
+>>>
+>>> list(range(3, 6))            # normal call with separate arguments
+[3, 4, 5]
+>>> args = [3, 6]
+>>> list(range(*args))            # call with arguments unpacked from a list
+[3, 4, 5]
+同样的风格，字典可以通过**操作传递关键字参数：
+
+>>>
+>>> def parrot(voltage, state='a stiff', action='voom'):
+...     print("-- This parrot wouldn't", action, end=' ')
+...     print("if you put", voltage, "volts through it.", end=' ')
+...     print("E's", state, "!")
+...
+>>> d = {"voltage": "four million", "state": "bleedin' demised", "action": "VOOM"}
+>>> parrot(**d)
+-- This parrot wouldn't VOOM if you put four million volts through it. E's bleedin' demised !
+4.7.5. Lambda 表达式 
+可以使用 lambda关键字创建小的匿名函数。此函数会返回两个参数的总和： lambda a, b: a+b.。Lambda 函数可以用于任何需要函数对象的地方。在语法上，它们被局限于只能有一个单独的表达式。在语义上，他们只是普通函数定义的语法糖。像嵌套的函数定义，lambda 函数可以从包含它的作用域中引用变量：
+
+>>>
+>>> def make_incrementor(n):
+...     return lambda x: x + n
+...
+>>> f = make_incrementor(42)
+>>> f(0)
+42
+>>> f(1)
+43
+上面的示例使用 lambda 表达式返回一个函数。 另一种用法是将一个小函数作为参数传递：
+
+>>>
+>>> pairs = [(1, 'one'), (2, 'two'), (3, 'three'), (4, 'four')]
+>>> pairs.sort(key=lambda pair: pair[1])
+>>> pairs
+[(4, 'four'), (1, 'one'), (3, 'three'), (2, 'two')]
+4.7.6. 文档字符串
+下面是一些关于文档字符串内容和格式的惯例。
+
+第一行永远应该是对象用途的简短、精确的总述。为了简单起见，不应该明确的陈述对象的名字或类型，因为这些信息可以从别的途径了解到（除非这个名字碰巧就是描述这个函数操作的动词）。这一行应该以大写字母开头，并以句号结尾。
+
+如果在文档字符串中有更多的行，第二行应该是空白，在视觉上把摘要与剩余的描述分离开来。以下各行应该是一段或多段描述对象的调用约定、 其副作用等。
+
+Python 解释器不会从多行的文档字符串中去除缩进，所以必要的时候处理文档字符串的工具应当自己清除缩进。使用以下约定即可，第一行 之后 的第一个非空行字符串确定整个文档字符串的缩进的量。（我们不用第一行是因为它通常紧靠着字符串起始的引号，其缩进格式不明晰。）所有行起始的等于缩进量的空格都将被过滤掉。不应该存在缩进更少的行，但如果确实存在，应去除所有其前导空白。应该在展开制表符之后（展开后通常为8个空格）再去测试留白的长度。
+
+这里是一个多行文档字符串的示例：
+
+>>>
+>>> def my_function():
+...     """Do nothing, but document it.
+...
+...     No, really, it doesn't do anything.
+...     """
+...     pass
+...
+>>> print(my_function.__doc__)
+Do nothing, but document it.
+
+    No, really, it doesn't do anything.
+4.7.7. 函数注解
+函数注解是关于用户定义的函数使用的类型的元数据信息，它们是完全可选的（更多信息参见PEP 484）。
+
+注解以字典形式存储在函数的__annotations__属性中，对函数其它任何部分没有任何影响。参数注解的定义是参数名后面跟着一个冒号，然后紧跟着一个用于计算注解的表达式。返回值注解的定义是一个->然后紧跟着一个表达式，它们位于参数列表和表示def语句结束的冒号之间。下面的示例包含一个位置参数，一个关键字参数，和被注解的返回值。
+
+>>>
+>>> def f(ham: str, eggs: str = 'eggs') -> str:
+...     print("Annotations:", f.__annotations__)
+...     print("Arguments:", ham, eggs)
+...     return ham + ' and ' + eggs
+...
+>>> f('spam')
+Annotations: {'ham': <class 'str'>, 'return': <class 'str'>, 'eggs': <class 'str'>}
+Arguments: spam eggs
+'spam and eggs'
+4.8. 插曲：代码风格
+若要编写更长更复杂的 Python 代码，是时候谈一谈 编码风格了 。大部分语言都可以有多种（比如更简洁，更格式化）写法，有些写法可以更易读。让你的代码更具可读性，而良好的编码风格对此有很大的帮助。
+
+对Python， PEP 8 已经成为多数项目遵循的代码风格指南；它推动了一种非常易于阅读且赏心悦目的编码风格。每个Python开发者都应该找个时间读一下； 以下是从中提取出来的最重要的一些点：
+
+使用 4 个空格的缩进，不要使用制表符。
+
+4 个空格是小缩进（允许更深的嵌套）和大缩进（易于阅读）之间很好的折衷。制表符会引起混乱，最好弃用。
+
+折行以确保其不会超过 79 个字符。
+
+这有助于小显示器用户阅读，也可以让大显示器能并排显示几个代码文件。
+
+使用空行分隔函数和类，以及函数内的大块代码。
+
+如果可能，注释单独成行。
+
+使用文档字符串。
+
+在操作符两边和逗号之后加空格， 但不要直接在左括号后和右括号前加： a = f(1, 2) + g(3, 4).
+
+类和函数的命名风格要一致；传统上使用 CamelCase （驼峰风格）命名类 而用 lower_case_with_underscores（小写字母加下划线）命名函数和方法。方法的第一个参数名称应为 self (查看 初识类 以获得更多有关类和方法的规则)。
+
+如果您的代码要在国际环境中使用，不要使用花哨的编码。Python 默认的 UTF-8 或者 ASCII 在任何时候都是最好的选择。
+
+同样，只要存在哪怕一丁点可能性有使用另一种不同语言的人会来阅读或维护你的代码，就不要在标识符中使用非 ASCII 字符。
+
+5. 数据结构
+本章详细讲述一些你已经学过的知识，并补充一些新内容。
+
+5.1. 列表的更多特性
+列表数据类型还有更多的方法。这里是列表对象方法的清单：
+
+list.append(x)
+添加一个元素到列表的末尾。相当于 a[len(a):] = [x].
+
+list.extend(L)
+将给定列表L中的所有元素附加到原列表a的末尾。相当于 a[len(a):] = L.
+
+list.insert(i, x)
+在给定位置插入一个元素。第一个参数为被插入元素的位置索引，因此 a.insert(0, x) 在列表头插入值， a.insert(len(a), x)相当于 a.append(x).
+
+list.remove(x)
+删除列表中第一个值为 x 的元素。如果没有这样的项目则会有一个错误。
+
+list.pop([i])
+删除列表中给定位置的元素并返回它。如果没有给定位置，a.pop()将会删除并返回列表中的最后一个元素。（i 两边的方括号表示这个参数是可选的，而不是要你输入方括号。你会在 Python 参考库中经常看到这种表示法)。
+
+list.clear()
+删除列表中所有的元素。相当于 del a[:].
+
+list.index(x)
+返回列表中第一个值为 x 的元素的索引。如果没有这样的元素将会报错。
+
+list.count(x)
+返回列表中 x 出现的次数。
+
+list.sort(key=None, reverse=False)
+排序列表中的项 (参数可被自定义, 参看 sorted() ).
+
+list.reverse()
+列表中的元素按位置反转。
+
+list.copy()
+返回列表的一个浅拷贝。相当于 a[:].
+
+列表方法示例：
+
+>>>
+>>> a = [66.25, 333, 333, 1, 1234.5]
+>>> print(a.count(333), a.count(66.25), a.count('x'))
+2 1 0
+>>> a.insert(2, -1)
+>>> a.append(333)
+>>> a
+[66.25, 333, -1, 333, 1, 1234.5, 333]
+>>> a.index(333)
+1
+>>> a.remove(333)
+>>> a
+[66.25, -1, 333, 1, 1234.5, 333]
+>>> a.reverse()
+>>> a
+[333, 1234.5, 1, 333, -1, 66.25]
+>>> a.sort()
+>>> a
+[-1, 1, 66.25, 333, 333, 1234.5]
+>>> a.pop()
+1234.5
+>>> a
+[-1, 1, 66.25, 333, 333]
+你可能已经注意以下方法 insert、 remove 或 sort 只修改列表且没有可打印的返回值 — — 他们返回默认 None。[1] 这是Python里可变数据结构的设计原则。
+
+5.1.1. 列表作为栈使用
+列表方法使得将列表用作堆栈非常容易，其中添加的最后一个元素是可提取的第一个元素（“last-in，first-out”）。使用 append()添加项到栈顶。使用无参的 pop() 从栈顶检出项。例如：
+
+>>>
+>>> stack = [3, 4, 5]
+>>> stack.append(6)
+>>> stack.append(7)
+>>> stack
+[3, 4, 5, 6, 7]
+>>> stack.pop()
+7
+>>> stack
+[3, 4, 5, 6]
+>>> stack.pop()
+6
+>>> stack.pop()
+5
+>>> stack
+[3, 4]
+5.1.2. 列表作为队列使用
+列表也有可能被用来作队列——先添加的元素被最先取出 (“先进先出”)；然而列表用作这个目的相当低效。因为在列表的末尾添加和弹出元素非常快，但是在列表的开头插入或弹出元素却很慢 (因为所有的其他元素必须向右或向左移一位)。
+
+若要实现一个队列， collections.deque 被设计用于快速地从两端操作。例如：
+
+>>>
+>>> from collections import deque
+>>> queue = deque(["Eric", "John", "Michael"])
+>>> queue.append("Terry")           # Terry arrives
+>>> queue.append("Graham")          # Graham arrives
+>>> queue.popleft()                 # The first to arrive now leaves
+'Eric'
+>>> queue.popleft()                 # The second to arrive now leaves
+'John'
+>>> queue                           # Remaining queue in order of arrival
+deque(['Michael', 'Terry', 'Graham'])
+5.1.3. 列表推导式
+列表推导式提供一个生成列表的简洁方法。应用程序通常会从一个序列的每个元素的操作结果生成新的列表，或者生成满足特定条件的元素的子序列。
+
+例如，假设我们要创建一个平方数列表，如：
+
+>>>
+>>> squares = []
+>>> for x in range(10):
+...     squares.append(x**2)
+...
+>>> squares
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+注意，上面这个创建（或者覆盖）了一个名为x的变量，它在循环结束时仍然存在。我们可以计算没有任何副作用的平方数列表：
+
+squares = list(map(lambda x: x**2, range(10)))
+或者，等价地:
+
+squares = [x**2 for x in range(10)]
+上面这个方法更加简明且易读。
+
+列表推导式由一对方括号组成，方括号包含一个表达式，其后跟随一个for子句，然后是零个或多个for或if子句。结果将是一个新的列表，其值来自将表达式在其后的for和if子句的上下文中求值得到的结果。例如，下面的 listcomp 组合两个列表中不相等的元素：
+
+>>>
+>>> [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
+[(1, 3), (1, 4), (2, 3), (2, 1), (2, 4), (3, 1), (3, 4)]
+它等效于：
+
+>>>
+>>> combs = []
+>>> for x in [1,2,3]:
+...     for y in [3,1,4]:
+...         if x != y:
+...             combs.append((x, y))
+...
+>>> combs
+[(1, 3), (1, 4), (2, 3), (2, 1), (2, 4), (3, 1), (3, 4)]
+注意这两个代码片段中，for和if语句的顺序是如何保持一致的。
+
+如果表达式是一个元组（例如，前面示例中的(x, y)），它必须位于圆括号中。
+
+>>>
+>>> vec = [-4, -2, 0, 2, 4]
+>>> # create a new list with the values doubled
+>>> [x*2 for x in vec]
+[-8, -4, 0, 4, 8]
+>>> # filter the list to exclude negative numbers
+>>> [x for x in vec if x >= 0]
+[0, 2, 4]
+>>> # apply a function to all the elements
+>>> [abs(x) for x in vec]
+[4, 2, 0, 2, 4]
+>>> # call a method on each element
+>>> freshfruit = ['  banana', '  loganberry ', 'passion fruit  ']
+>>> [weapon.strip() for weapon in freshfruit]
+['banana', 'loganberry', 'passion fruit']
+>>> # create a list of 2-tuples like (number, square)
+>>> [(x, x**2) for x in range(6)]
+[(0, 0), (1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]
+>>> # the tuple must be parenthesized, otherwise an error is raised
+>>> [x, x**2 for x in range(6)]
+  File "<stdin>", line 1, in ?
+    [x, x**2 for x in range(6)]
+               ^
+SyntaxError: invalid syntax
+>>> # flatten a list using a listcomp with two 'for'
+>>> vec = [[1,2,3], [4,5,6], [7,8,9]]
+>>> [num for elem in vec for num in elem]
+[1, 2, 3, 4, 5, 6, 7, 8, 9]
+列表推导式可以包含复杂的表达式和嵌套的函数：
+
+>>>
+>>> from math import pi
+>>> [str(round(pi, i)) for i in range(1, 6)]
+['3.1', '3.14', '3.142', '3.1416', '3.14159']
+5.1.4. 嵌套的列表推导式
+列表推导式的第一个表达式可以是任何表达式，包括另外一个列表推导式。
+
+考虑下面由三个长度为 4 的列表组成的 3x4 矩阵：
+
+>>>
+>>> matrix = [
+...     [1, 2, 3, 4],
+...     [5, 6, 7, 8],
+...     [9, 10, 11, 12],
+... ]
+下面的列表推导式将转置行和列：
+
+>>>
+>>> [[row[i] for row in matrix] for i in range(4)]
+[[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
+正如在前一节中我们所见，嵌套的列表推导式在它后面的for上下文中求值，所以这个例子等效于：
+
+>>>
+>>> transposed = []
+>>> for i in range(4):
+...     transposed.append([row[i] for row in matrix])
+...
+>>> transposed
+[[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
+展开后，和下面的代码相同：
+
+>>>
+>>> transposed = []
+>>> for i in range(4):
+...     # the following 3 lines implement the nested listcomp
+...     transposed_row = []
+...     for row in matrix:
+...         transposed_row.append(row[i])
+...     transposed.append(transposed_row)
+...
+>>> transposed
+[[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
+在实际中，与复杂的控制流比起来，你应该更喜欢内置的函数。zip()函数对这个使用场景做得非常好：
+
+>>>
+>>> list(zip(*matrix))
+[(1, 5, 9), (2, 6, 10), (3, 7, 11), (4, 8, 12)]
+参见解开参数列表中关于这一行中的星号的详细信息。
+
+5.2. del 语句
+有一个方法可以根据索引而不是值从列表中删除一个元素：del语句。这跟pop()方法不同，后者会返回一个值。del语句也可以用于从列表中删除片段或清除整个列表（先前我们通过将一个空列表赋值给这个片段来达到此目的）。例如：
+
+>>>
+>>> a = [-1, 1, 66.25, 333, 333, 1234.5]
+>>> del a[0]
+>>> a
+[1, 66.25, 333, 333, 1234.5]
+>>> del a[2:4]
+>>> a
+[1, 66.25, 1234.5]
+>>> del a[:]
+>>> a
+[]
+del 也可以用于删除整个变量︰
+
+>>>
+>>> del a
+如果再次对变量a进行引用将引起错误（至少在对变量a再次赋值前）。在后文中我们将会发现del还有其它的用途。
+
+5.3. 元组和序列
+我们已经看到列表和字符串具有很多共同的属性，如索引和切片操作。有两种序列数据类型（参见序列类型——列表、元组、range）。因为 Python 是一个正在不断进化的语言，其他的序列类型也可能被添加进来。还有另一种标准序列数据类型：元组。
+
+元组由一组用逗号分隔的值组成，例如：
+
+>>>
+>>> t = 12345, 54321, 'hello!'
+>>> t[0]
+12345
+>>> t
+(12345, 54321, 'hello!')
+>>> # Tuples may be nested:
+... u = t, (1, 2, 3, 4, 5)
+>>> u
+((12345, 54321, 'hello!'), (1, 2, 3, 4, 5))
+>>> # Tuples are immutable:
+... t[0] = 88888
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'tuple' object does not support item assignment
+>>> # but they can contain mutable objects:
+... v = ([1, 2, 3], [3, 2, 1])
+>>> v
+([1, 2, 3], [3, 2, 1])
+正如你所见，在输出中，元组总是位于圆括号中，所以嵌套的元组可以正确解析；输入的时候它们的周围可以放置圆括号也可以不放，然而圆括号经常是必要的（如果元组是一个更大的表达式的一部分）。不能给元组中单独的一个元素赋值，不过可以创建包含可变对象（例如列表）的元组。
+
+虽然元组看起来类似于列表，它们经常用于不同的场景和不同的目的。元组是不可变的，通常包含各种各样的元素，这些元素通过分拆（参见本节的后面部分）或索引（或甚至是属性namedtuples）访问。列表是可变的，它们的元素通常是相同类型，并通过迭代列表来访问。
+
+一个特殊的问题是构造包含0个或1个元素的元组：为了实现这种情况，语法上有一些奇怪。空的元组通过一对空的圆括号构造；只有一个元素的元组通过一个元素跟随一个逗号构造（仅用圆括号把一个值括起来是不够的）。丑陋，但是有效。例如：
+
+>>>
+>>> empty = ()
+>>> singleton = 'hello',    # <-- note trailing comma
+>>> len(empty)
+0
+>>> len(singleton)
+1
+>>> singleton
+('hello',)
+语句t = 12345, 54321, 'hello!'是元组封装的一个例子：值12345、54321和'hello!'被一起分封装在一个元组中。其逆操作也是可以的：
+
+>>>
+>>> x, y, z = t
+这被称为序列分拆再恰当不过了，且可以用于右边的任何序列。序列分拆要求在等号的左侧有与序列中的元素一样多的变量。注意多重赋值只是同时进行元组封装和序列分拆。
+
+5.4. 集合
+Python 还包含了一个数据类型 集合。集合中的元素不会重复且没有顺序。集合的基本用途包括成员测试和消除重复条目。集合对象也支持数学运算，如并，交，差和对称差。
+
+花括号或者set()函数可以用来创建集合。注意，你必须使用set()创建一个空的集合，而不能用{}；后面这种写法创建一个空的字典，我们将在下一节讨论这个数据结构。
+
+这里是一个简短的演示：
+
+>>>
+>>> basket = {'apple', 'orange', 'apple', 'pear', 'orange', 'banana'}
+>>> print(basket)                      # show that duplicates have been removed
+{'orange', 'banana', 'pear', 'apple'}
+>>> 'orange' in basket                 # fast membership testing
+True
+>>> 'crabgrass' in basket
+False
+
+>>> # Demonstrate set operations on unique letters from two words
+...
+>>> a = set('abracadabra')
+>>> b = set('alacazam')
+>>> a                                  # unique letters in a
+{'a', 'r', 'b', 'c', 'd'}
+>>> a - b                              # letters in a but not in b
+{'r', 'd', 'b'}
+>>> a | b                              # letters in either a or b
+{'a', 'c', 'r', 'd', 'b', 'm', 'z', 'l'}
+>>> a & b                              # letters in both a and b
+{'a', 'c'}
+>>> a ^ b                              # letters in a or b but not both
+{'r', 'd', 'b', 'm', 'z', 'l'}
+类似于列表推导式，集合也支持推导式：
+
+>>>
+>>> a = {x for x in 'abracadabra' if x not in 'abc'}
+>>> a
+{'r', 'd'}
+5.5. 字典
+另一个有用的Python内置数据类型是字典（参见映射类型——字典）。在其它语言中字典有时候被称为“associative memories” 或者“associative arrays”。与由数字索引的序列不同，字典是依据键索引的，键可以是任意不可变的类型；字符串和数字始终能作为键。元组可以用作键，如果它们只包含字符串、 数字或元组；如果一个元组直接或间接地包含任何可变对象，它不能用作键。不能使用列表作为键，因为列表可以使用索引赋值、切片赋值或append()和extend()方法在原变量上修改。
+
+理解字典的最佳方式是把它看做无序的键:值对集合，要求是键必须是唯一的（在同一个字典内）。一对空的花括号创建一个空的字典：{}。将用逗号分隔的键:值对序列放置在花括号中将添加初始的键:值对到字典中；这也是字典写到输出中的方式。
+
+字典的主要操作是依据键来存取值。还可以通过del删除一个键:值对。如果使用已在使用的键进行存储，则会忘记与该键相关联的旧值。使用不存在的键提取值时会出错。
+
+在字典上执行list(d.keys())将返回字典中用到所有的键的一个列表，但是没有顺序（如果想要排序，只需使用sorted(d.keys())）。[2]若要检查一个键是否在字典中，可以使用in关键字。
+
+下面是一个使用字典的小示例：
+
+>>>
+>>> tel = {'jack': 4098, 'sape': 4139}
+>>> tel['guido'] = 4127
+>>> tel
+{'sape': 4139, 'guido': 4127, 'jack': 4098}
+>>> tel['jack']
+4098
+>>> del tel['sape']
+>>> tel['irv'] = 4127
+>>> tel
+{'guido': 4127, 'irv': 4127, 'jack': 4098}
+>>> list(tel.keys())
+['irv', 'guido', 'jack']
+>>> sorted(tel.keys())
+['guido', 'irv', 'jack']
+>>> 'guido' in tel
+True
+>>> 'jack' not in tel
+False
+dict()构造函数直接从键-值对序列构建字典：
+
+>>>
+>>> dict([('sape', 4139), ('guido', 4127), ('jack', 4098)])
+{'sape': 4139, 'jack': 4098, 'guido': 4127}
+此外，字典推导式可以用于从任意键和值表达式创建字典：
+
+>>>
+>>> {x: x**2 for x in (2, 4, 6)}
+{2: 4, 4: 16, 6: 36}
+当键都是简单的字符串时，通过关键字参数指定 键-值 对有时会更为方便：
+
+>>>
+>>> dict(sape=4139, guido=4127, jack=4098)
+{'sape': 4139, 'jack': 4098, 'guido': 4127}
+5.6.循环的技巧
+当循环遍历字典时，键和对应的值可以使用items()方法同时提取出来。
+
+>>>
+>>> knights = {'gallahad': 'the pure', 'robin': 'the brave'}
+>>> for k, v in knights.items():
+...     print(k, v)
+...
+gallahad the pure
+robin the brave
+当遍历一个序列时，使用enumerate()函数可以同时得到位置索引和对应的值。
+
+>>>
+>>> for i, v in enumerate(['tic', 'tac', 'toe']):
+...     print(i, v)
+...
+0 tic
+1 tac
+2 toe
+同时遍历两个或更多的序列，使用zip()函数可以成对读取元素。
+
+>>>
+>>> questions = ['name', 'quest', 'favorite color']
+>>> answers = ['lancelot', 'the holy grail', 'blue']
+>>> for q, a in zip(questions, answers):
+...     print('What is your {0}?  It is {1}.'.format(q, a))
+...
+What is your name?  It is lancelot.
+What is your quest?  It is the holy grail.
+What is your favorite color?  It is blue.
+要反向遍历一个序列，首先正向生成这个序列，然后调用reversed()函数。
+
+>>>
+>>> for i in reversed(range(1, 10, 2)):
+...     print(i)
+...
+9
+7
+5
+3
+1
+要按顺序循环一个序列，请使用sorted()函数，返回一个新的排序的列表，同时保留源不变。
+
+>>>
+>>> basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
+>>> for f in sorted(set(basket)):
+...     print(f)
+...
+apple
+banana
+orange
+pear
+如果在遍历列表的时候同时想改变它，创建一个新的列表会更简单更安全。
+
+>>>
+>>> import math
+>>> raw_data = [56.2, float('NaN'), 51.7, 55.3, 52.5, float('NaN'), 47.8]
+>>> filtered_data = []
+>>> for value in raw_data:
+...     if not math.isnan(value):
+...         filtered_data.append(value)
+...
+>>> filtered_data
+[56.2, 51.7, 55.3, 52.5, 47.8]
+5.7. 深入条件控制
+while和if语句中使用的条件可以包含任意的操作，而不仅仅是比较。
+
+比较操作符in和not in检查一个值是否在一个序列中出现（不出现）。is和is not比较两个对象是否为相同的对象；这只对列表这样的可变对象比较重要。所有比较运算符都具有相同的优先级，低于所有数值运算符。
+
+可以级联比较。例如，a < b == c测试a是否小于b并且b是否等于c。
+
+可以使用布尔运算符and和or组合，比较的结果（或任何其他的布尔表达式）可以用not取反。这些操作符的优先级又低于比较操作符；它们之间，not 优先级最高，or 优先级最低，所以 A and not B or C 等效于 (A and (not B)) or C。与往常一样，可以使用括号来表示所需的组合。
+
+布尔运算符and 和 or 是所谓的 短路 运算符：依参数从左向右求值，结果一旦确定就停止。例如，如果A 和 C 都为真，但B是假， A and B and C 将不计算表达式 C。当用作一个普通值而非逻辑值时，短路操作符的返回值通常是最后一个计算的。
+
+可以把比较或其它逻辑表达式的返回值赋给一个变量。例如，
+
+>>>
+>>> string1, string2, string3 = '', 'Trondheim', 'Hammer Dance'
+>>> non_null = string1 or string2 or string3
+>>> non_null
+'Trondheim'
+注意 Python 与 C 不同，在表达式内部不能赋值。C程序员可能会抱怨这一点，但它避免了C程序中常见的一类问题：在表达式中输入=而真正的意图是==。
+
+5.8. 序列和其它类型的比较
+序列对象可以与具有相同序列类型的其他对象相比较。比较按照 字典序 进行： 首先比较两个序列的首元素，如果不同，就决定了比较的结果；如果相同，就比较后面两个元素，依此类推，直到其中一个序列穷举完。如果要比较的两个元素本身就是同一类型的序列，就按字典序递归比较。如果两个序列的所有元素都相等，就认为序列相等。如果一个序列是另一个序列的初始子序列，较短的序列就小于另一个。字符串的词典序使用Unicode码点数字来排序单个字符。下面是同类型序列之间比较的一些例子：
+
+(1, 2, 3)              < (1, 2, 4)
+[1, 2, 3]              < [1, 2, 4]
+'ABC' < 'C' < 'Pascal' < 'Python'
+(1, 2, 3, 4)           < (1, 2, 4)
+(1, 2)                 < (1, 2, -1)
+(1, 2, 3)             == (1.0, 2.0, 3.0)
+(1, 2, ('aa', 'ab'))   < (1, 2, ('abc', 'a'), 4)
+注意使用< 或 >比较不同类型的对象也是合法的，只要对象具有恰当的比较方法。例如，不同的数字类型按照它们的数值比较，所以 0 等于 0.0，等等。否则，解释器将引发一个TypeError异常，而不是给出一个随便的顺序。
+
+脚注
+
+[1]	其它语言可能返回这个可变的对象，这样允许方法的级联，例如d->insert("a")->remove("b")->sort();。
+[2]	调用d.keys()将返回一个字典视图对象。它支持成员测试和迭代操作，但是它的内容不是独立于原始字典的——它只是一个(基于原始字典的)视图。
+
+6. 模块
+如果你退出 Python 解释器并重新进入，你做的任何定义（变量和方法）都会丢失。因此，如果你想要编写一些更大的程序，最好使用文本编辑器先编写好，然后运行这个文件。 这就是所谓的创建 脚本。随着你的程序变得越来越长，你可能想要将它分成几个文件，这样更易于维护。你还可能想在几个程序中使用你已经编写好的函数，而不用把函数定义拷贝到每个程序中。
+
+为了支持这个功能，Python 有种方法可以把你定义的内容放到一个文件中，然后在脚本或者交互方式中使用。这样的文件称为模块；模块中的定义可以导入到其他模块或主模块（您可以在顶层和计算器中执行的脚本中访问的变量的容器模式）。
+
+模块是包含 Python 定义和声明的文件。文件名就是模块名以 扩展名.py 结尾.在模块内部,模块名 (一个字符串) 可以通过一个全局变量 __name__取得.例如，用你最喜欢的文本编辑器在当前目录下创建一个名为fibo.py的文件，文件内容如下：
+
+# Fibonacci numbers module
+
+def fib(n):    # write Fibonacci series up to n
+    a, b = 0, 1
+    while b < n:
+        print(b, end=' ')
+        a, b = b, a+b
+    print()
+
+def fib2(n):   # return Fibonacci series up to n
+    result = []
+    a, b = 0, 1
+    while b < n:
+        result.append(b)
+        a, b = b, a+b
+    return result
+现在进入 Python 解释器并使用下面的命令导入这个模块：
+
+>>>
+>>> import fibo
+在当前的符号表中，这并不导入 fibo 中定义的函数的名称，它只进入模块名称 fibo 。使用模块名称，您可以访问其中的函数：
+
+>>>
+>>> fibo.fib(1000)
+1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+>>> fibo.fib2(100)
+[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+>>> fibo.__name__
+'fibo'
+如果您打算经常使用函数，可以给其分配一个本地名称：
+
+>>>
+>>> fib = fibo.fib
+>>> fib(500)
+1 1 2 3 5 8 13 21 34 55 89 144 233 377
+6.1. 深入模块
+模块可以包含可执行语句以及已定义的函数。这些语句通常用于初始化模块。只有在导入语句中第一次遇到模块名称时，才会执行。[1]（如果文件以脚本的方式执行，它们也会运行。）
+
+每个模块都有自己的私有符号表，它是被定义在模块中所有函数的全局符号表。因此，模块的作者可以在模块里使用全局变量，而不用担心与某个用户的全局变量有冲突。另一方面，如果你非常清楚你在做什么，你就可以用相同的符号来调用模块中的全局变量，modname.itemname 这种符号指向它的函数。
+
+模块中可以导入其它模块。一般来说，习惯性地将所有 import 语句放在模块 （或脚本，就此而言） 的开头，但这不是必须的。被导入的模块的名字放在导入模块的全局符号表中。
+
+另外有一种import 语句的变种，可以从一个模块直接将名称导入到导入模块符号表中。例如：
+
+>>>
+>>> from fibo import fib, fib2
+>>> fib(500)
+1 1 2 3 5 8 13 21 34 55 89 144 233 377
+这不会把模块名导入到本地的符号表中（所以在本例中，fibo没有定义）。
+
+还有种方式可以导入模块中定义的所有名字：
+
+>>>
+>>> from fibo import *
+>>> fib(500)
+1 1 2 3 5 8 13 21 34 55 89 144 233 377
+这种方式导入除下划线 (_) 开头的所有名称。大多数情况下Python程序员不要使用这个便利的方法，因为它会引入一系列未知的名称到解释器中，这很可能覆盖你已经定义的一些东西。
+
+注意通常情况下从其他module或package中导入*是不被赞同的，因为这会降低代码的可读性。不过，在交互式会话中这样用是可以的，它可以让你少敲一些代码。
+
+注意出于性能考虑，每个模块在每个解释器会话中只导入一遍。因此, 如果你更改了你的模块,你必须重启解释器——或者，如果你想用交互的方式测试你的模块，可以使用importlib.reload()，例如import importlib; importlib.reload(modulename)。
+6.1.1. 以脚本方式执行模块
+当你用下列的方式运行一个 Python 模块
+
+python fibo.py <arguments>
+模块中的代码将会被执行，就像导入它一样，不过此时__name__ 被设置为 "__main__"。这意味着，通过在你的模块末尾添加此代码︰
+
+if __name__ == "__main__":
+    import sys
+    fib(int(sys.argv[1]))
+您可以使该文件可用作脚本以及可导入模块，因为解析命令行的代码只有在模块作为“main”文件执行时才会运行：
+
+$ python fibo.py 50
+1 1 2 3 5 8 13 21 34
+如果模块是被导入的，将不会运行这段代码：
+
+>>>
+>>> import fibo
+>>>
+这种方法通常用来为模块提供一个方便的用户接口，或者用来测试（例如直接运行脚本会执行一组测试用例）。
+
+6.1.2. 模块搜索路径
+当一个叫spam 的模块被导入，解释器会先在内置模块中搜索该模块。如果没有找到，它会接着到sys.path变量给出的目录中查找名为spam.py的文件。sys.path变量的初始值来自这些位置：
+
+脚本所在的目录（如果没有指明文件，则为当前目录）。
+PYTHONPATH（一个包含目录名的列表，与shell变量PATH的语法相同）。
+与安装相关的默认值。
+注意 在支持符号连接的文件系统中，输入的脚本所在的目录是符号连接指向的目录。换句话说，包含符号链接的目录是不添加到模块搜索路径的。
+初始化后，Python程序可以修改sys.path。脚本所在的目录被放置在搜索路径的最开始，也就是在标准库的路径之前。这意味着将会加载当前目录中的脚本，库目录中具有相同名称的模块不会被加载。除非你是有意想替换标准库，否则这应该被当成是一个错误。更多信息请参阅标准模块小节。
+
+6.1.3. "编译好的"Python文件
+为了加快加载模块的速度，Python在__pycache__目录下缓存每个模块编译好的版本，名字为module.version.pyc，其中version表示编译好的文件的格式；它一般包含Python的版本号。例如，在CPython 3.3中，spam.py编译好的版本将缓存为 __pycache__/spam.cpython-33.pyc。这种命名约定允许由不同发布和不同版本的Python编译的模块同时存在。
+
+Python会检查源文件和编译好的版本的修改日期，来查看它是否过期以及需要重新编译。这是完全自动化的过程。同时，编译后的模块是跨平台的，所以同一个库可以在不同架构的系统之间共享。
+
+Python 在两种情况下不检查缓存。第一，它会始终重新编译而且不保存直接从命令行加载的模块。第二，如果没有源模块它不会检查缓存。若要支持没有源文件（只有编译版）的发布，编译后的模块必须在源目录下，并且必须没有源文件的模块。
+
+部分高级技巧：
+
+你可以在Python命令中使用-O或者-OO开关来减少编译好的模块的大小。-O开关移除assert语句，-OO移除assert语句和__doc__字符串。因为某些程序可能会依赖于具有它们，你应该只在你知道做什么的情况下使用此选项。“优化”后的模块有一个opt-标记，而且通常会小一些。未来的版本可能会修改优化的效果。
+从.pyc文件读取的程序不会比从.py文件读取的程序运行得更快，.pyc文件唯一快的地方在于它们加载的速度。
+compileall模块可以为一个目录下的所有模块创建.pyc文件。
+这个过程还有更多的细节，包括决策的流程图，参见PEP 3147。
+6.2. 标准模块
+Python 带有一个标准模块库，并发布有单独的文档叫Python 库参考手册（以下简称"库参考手册"）。有些模块被直接构建在解析器里；这些操作虽然不是语言核心的部分，但是依然被内建进来，一方面是效率的原因，另一方面是为了提供访问操作系统原语，如系统调用的功能。这些模块是可配置的，也取决于底层的平台。例如，winreg模块只在Windows系统上提供。有一个特别的模块值得注意：sys，它内置在每一个Python解析器中。变量sys.ps1和sys.ps2定义了主提示符和辅助提示符使用的字符串：
+
+>>>
+>>> import sys
+>>> sys.ps1
+'>>> '
+>>> sys.ps2
+'... '
+>>> sys.ps1 = 'C> '
+C> print('Yuck!')
+Yuck!
+C>
+只有在交互式模式中，这两个变量才有定义。
+
+变量sys.path是一个字符串列表，它决定了模块的解释器搜索路径。它初始的默认路径来自于环境变量 PYTHONPATH，如果 PYTHONPATH 未设置则来自于内置的默认值。你可以使用标准的列表操作修改它：
+
+>>>
+>>> import sys
+>>> sys.path.append('/ufs/guido/lib/python')
+6.3. dir()函数
+内置函数 dir() 用来找出模块中定义了哪些名字。它返回一个排好序的字符串列表：
+
+>>>
+>>> import fibo, sys
+>>> dir(fibo)
+['__name__', 'fib', 'fib2']
+>>> dir(sys)  
+['__displayhook__', '__doc__', '__excepthook__', '__loader__', '__name__',
+ '__package__', '__stderr__', '__stdin__', '__stdout__',
+ '_clear_type_cache', '_current_frames', '_debugmallocstats', '_getframe',
+ '_home', '_mercurial', '_xoptions', 'abiflags', 'api_version', 'argv',
+ 'base_exec_prefix', 'base_prefix', 'builtin_module_names', 'byteorder',
+ 'call_tracing', 'callstats', 'copyright', 'displayhook',
+ 'dont_write_bytecode', 'exc_info', 'excepthook', 'exec_prefix',
+ 'executable', 'exit', 'flags', 'float_info', 'float_repr_style',
+ 'getcheckinterval', 'getdefaultencoding', 'getdlopenflags',
+ 'getfilesystemencoding', 'getobjects', 'getprofile', 'getrecursionlimit',
+ 'getrefcount', 'getsizeof', 'getswitchinterval', 'gettotalrefcount',
+ 'gettrace', 'hash_info', 'hexversion', 'implementation', 'int_info',
+ 'intern', 'maxsize', 'maxunicode', 'meta_path', 'modules', 'path',
+ 'path_hooks', 'path_importer_cache', 'platform', 'prefix', 'ps1',
+ 'setcheckinterval', 'setdlopenflags', 'setprofile', 'setrecursionlimit',
+ 'setswitchinterval', 'settrace', 'stderr', 'stdin', 'stdout',
+ 'thread_info', 'version', 'version_info', 'warnoptions']
+如果不带参数， dir() 列出当前已定义的名称：
+
+>>>
+>>> a = [1, 2, 3, 4, 5]
+>>> import fibo
+>>> fib = fibo.fib
+>>> dir()
+['__builtins__', '__name__', 'a', 'fib', 'fibo', 'sys']
+注意它列出了所有类型的名称： 变量、 模块、 函数等。
+
+dir()不会列出内置的函数和变量的名称。如果你想列出这些内容，它们定义在标准模块builtins中：
+
+>>>
+>>> import builtins
+>>> dir(builtins)  
+['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException',
+ 'BlockingIOError', 'BrokenPipeError', 'BufferError', 'BytesWarning',
+ 'ChildProcessError', 'ConnectionAbortedError', 'ConnectionError',
+ 'ConnectionRefusedError', 'ConnectionResetError', 'DeprecationWarning',
+ 'EOFError', 'Ellipsis', 'EnvironmentError', 'Exception', 'False',
+ 'FileExistsError', 'FileNotFoundError', 'FloatingPointError',
+ 'FutureWarning', 'GeneratorExit', 'IOError', 'ImportError',
+ 'ImportWarning', 'IndentationError', 'IndexError', 'InterruptedError',
+ 'IsADirectoryError', 'KeyError', 'KeyboardInterrupt', 'LookupError',
+ 'MemoryError', 'NameError', 'None', 'NotADirectoryError', 'NotImplemented',
+ 'NotImplementedError', 'OSError', 'OverflowError',
+ 'PendingDeprecationWarning', 'PermissionError', 'ProcessLookupError',
+ 'ReferenceError', 'ResourceWarning', 'RuntimeError', 'RuntimeWarning',
+ 'StopIteration', 'SyntaxError', 'SyntaxWarning', 'SystemError',
+ 'SystemExit', 'TabError', 'TimeoutError', 'True', 'TypeError',
+ 'UnboundLocalError', 'UnicodeDecodeError', 'UnicodeEncodeError',
+ 'UnicodeError', 'UnicodeTranslateError', 'UnicodeWarning', 'UserWarning',
+ 'ValueError', 'Warning', 'ZeroDivisionError', '_', '__build_class__',
+ '__debug__', '__doc__', '__import__', '__name__', '__package__', 'abs',
+ 'all', 'any', 'ascii', 'bin', 'bool', 'bytearray', 'bytes', 'callable',
+ 'chr', 'classmethod', 'compile', 'complex', 'copyright', 'credits',
+ 'delattr', 'dict', 'dir', 'divmod', 'enumerate', 'eval', 'exec', 'exit',
+ 'filter', 'float', 'format', 'frozenset', 'getattr', 'globals', 'hasattr',
+ 'hash', 'help', 'hex', 'id', 'input', 'int', 'isinstance', 'issubclass',
+ 'iter', 'len', 'license', 'list', 'locals', 'map', 'max', 'memoryview',
+ 'min', 'next', 'object', 'oct', 'open', 'ord', 'pow', 'print', 'property',
+ 'quit', 'range', 'repr', 'reversed', 'round', 'set', 'setattr', 'slice',
+ 'sorted', 'staticmethod', 'str', 'sum', 'super', 'tuple', 'type', 'vars',
+ 'zip']
+6.4. 包
+包是一种构建 Python 模块的命名空间的方式，采用“点分模块名称”。例如，模块名称A.B指定了包A 中名为B 的子模块。就像模块的使用让不同模块的作者不用担心相互间的全局变量名称一样，点分模块的使用让包含多个模块的包（例如 Numpy 和 Python Imaging Library）的作者也不用担心相互之间的模块重名。
+
+假设你想要设计一系列模块（或一个“包”）来统一处理声音文件和声音数据。有很多不同的声音文件格式 (通常用其扩展名识别，例如︰ .wav，.aiff，.au)，所以您可能需要创建和维护日益模块集合的各种文件格式之间的转换。你可能还想针对音频数据做很多不同的操作（比如混音，添加回声，增加均衡器功能，创建人造立体声效果），所以你还需要编写一组永远写不完的模块来处理这些操作。你的包可能会是这个结构（用分层的文件系统表示）：
+
+sound/                          Top-level package
+      __init__.py               Initialize the sound package
+      formats/                  Subpackage for file format conversions
+              __init__.py
+              wavread.py
+              wavwrite.py
+              aiffread.py
+              aiffwrite.py
+              auread.py
+              auwrite.py
+              ...
+      effects/                  Subpackage for sound effects
+              __init__.py
+              echo.py
+              surround.py
+              reverse.py
+              ...
+      filters/                  Subpackage for filters
+              __init__.py
+              equalizer.py
+              vocoder.py
+              karaoke.py
+              ...
+当导入包，Python 通过 sys.path 寻找包子目录的目录搜索。
+
+__init__.py文件是必需的，这样才能使Python将目录当作包；这样做的目的是为了防止将具有共同名字的目录，不小心暴露到模块搜索路径之上，如string。最简单的情况，__init__.py 可以只是一个空的文件，但它也可以为包执行初始化代码或设置 __all__ 变量，稍后介绍。
+
+用户可以从包中导入单独的模块，例如：
+
+import sound.effects.echo
+这将加载子模块 sound.effects.echo。它必须使用其完整名称来引用。
+
+sound.effects.echo.echofilter(input, output, delay=0.7, atten=4)
+导入子模块的另一方法是：
+
+from sound.effects import echo
+这样也能加载子模块 echo, 这样就不需要写前缀了；因此它也能像下面这样使用：
+
+echo.echofilter(input, output, delay=0.7, atten=4)
+还有另一种变化方式是直接导入所需的函数或变量：
+
+from sound.effects.echo import echofilter
+同样, 也就可以这样导入子模块 echo, 它使得它的函数 echofilter()直接就可用了：
+
+echofilter(input, output, delay=0.7, atten=4)
+注意使用from package import item时，item 可以是包的子模块（或子包），也可以是包中定义的一些其它的名称，比如函数、 类或者变量。import语句首先测试 item 在包中是否有定义；如果没有，它假定它是一个模块，并尝试加载它。如果未能找到，则引发ImportError异常。
+
+相反，使用类似 import item.subitem.subsubitem 这样的语法时，除了最后一项其它每项必须是一个包；最后一项可以是一个模块或一个包，但不能是在前一个项目中定义的类、函数或变量。
+
+6.4.1. 从包中导入 * 
+当用户输入 from sound.effects import *时会发生什么?理想情况下，他应该是希望到文件系统中寻找包里面有哪些子模块，并把它们全部导入进来。这可能需要很长时间，而且导入子模块可能会产生想不到的副作用，这些作用本应该只有当子模块是显式导入时才会发生。
+
+唯一的解决方案是包作者提供包的显式索引。import语句使用以下约定：如果包中的 __init__.py 代码定义了一个名为__all__的列表，那么在遇到 from package import *语句的时候，应该把这个列表中的所有模块名字导入。当包有新版本包发布时，就需要包的作者更新这个列表了。包作者也可能决定不支持它，如果他们看不到从包中导入*的用途。例如，文件sound/effects/__init__.py可以包含下面的代码：
+
+__all__ = ["echo", "surround", "reverse"]
+这意味着 from sound.effects import * 将导入sound 包的三个子模块。
+
+如果 __all__ 没有定义，from sound.effects import * 语句 不 会从 sound.effects 包中导入所有的子模块到当前命名空间；它只保证sound.effects包已经被导入（可能会运行__init__.py 中的任何初始化代码），然后导入包中定义的任何名称。这包括由 __init__.py 定义的任何名称（以及它显式加载的子模块）。还包括这个包中已经由前面的import 语句显式加载的子模块。请考虑此代码：
+
+import sound.effects.echo
+import sound.effects.surround
+from sound.effects import *
+在这个例子中，当from...import语句执行时，echo和surround模块被导入到当前命名空间，因为它们定义在sound.effects包中。（定义了__all__时会以同样的方式工作。）
+
+虽然某些模块设计成使用import * 时只导出符合特定模式的名称，在产品代码中使用这种写法仍然是不好的做法。
+
+记住，使用fromPackageimport specific_submodule一定没错！事实上，这是推荐的写法，除非导入的模块需要使用其它包中的同名子模块。
+
+6.4.2. 包内引用
+如果一个包是子包（比如例子中的 sound 包），你可以使用绝对导入来引用兄弟包的子模块。例如，如果模块sound.filters.vocoder需要使用sound.effects包中的echo模块，它可以使用from sound.effects import echo。
+
+你还可以使用from module import name形式的导入语句写成相对导入。这些导入使用前导的点号表示相对导入的是从当前包还是上级的包。以 surround 模块为例，你可以使用：
+
+from . import echo
+from .. import formats
+from ..filters import equalizer
+注意，相对导入基于当前模块的名称。因为主模块的名字总是 "__main__" ，Python 应用程序的主模块应该总是用绝对导入。
+
+6.4.3. 包含多个目录的包
+包支持另外一个特殊的属性， __path__。在文件中的代码运行之前，该变量被初始化为一个包含__init__.py 所在目录的列表。这个变量可以修改；这样做会影响未来包中包含的模块和子包的搜索。
+
+虽然通常不需要此功能，它可以用于扩展包中的模块的集合。
+
+脚注
+
+[1]	实际上，函数的定义也是可以‘执行’的‘语句’；模块级别函数定义的执行就是将函数名放入该模块的全局符号表中。
+
+7. 输入和输出
+展现程序的输出有多种方法；可以打印成人类可读的形式，也可以写入到文件以便后面使用。本章将讨论其中的几种方法。
+
+7.1. 格式化输出
+到目前为止我们遇到过两种输出值的方法：表达式语句和print()函数。（第三个方式是使用文件对象的write()方法；标准输出文件可以引用 sys.stdout。详细内容参见库参考手册。）
+
+通常你会希望更好地控制输出的格式而不是简单地打印用空格分隔的值。有两种方式格式化你的输出：第一种方式是自己做所有字符串处理；使用字符串切片和串联操作，你可以创建任何你可以想象的布局。字符串类型有一些方法，用于执行将字符串填充到指定列宽度的有用操作；这些稍后将讨论。第二种方法是使用 str.format() 方法。
+
+string模块包含一个Template类，提供另外一种向字符串代入值的方法。
+
+当然还有一个问题：如何将值转换为字符串？幸运的是，python已经有方法把任何值转换成字符串：使用repr() 或 str() 方法。
+
+str()函数的用意在于返回人类可读的表现形式，而repr()的用意在于生成解释器可读的表现形式（如果没有等价的语法将会引发SyntaxError异常）。对于对人类并没有特别的表示形式的对象， str()和repr()将返回相同的值。许多值，例如数字或者列表和字典这样的结构，使用这两个函数中的任意一个都具有相同的表示形式。特别地,字符串有两个不同的表示。
+
+例如：
+
+>>>
+>>> s = 'Hello, world.'
+>>> str(s)
+'Hello, world.'
+>>> repr(s)
+"'Hello, world.'"
+>>> str(1/7)
+'0.14285714285714285'
+>>> x = 10 * 3.25
+>>> y = 200 * 200
+>>> s = 'The value of x is ' + repr(x) + ', and y is ' + repr(y) + '...'
+>>> print(s)
+The value of x is 32.5, and y is 40000...
+>>> # The repr() of a string adds string quotes and backslashes:
+... hello = 'hello, world\n'
+>>> hellos = repr(hello)
+>>> print(hellos)
+'hello, world\n'
+>>> # The argument to repr() may be any Python object:
+... repr((x, y, ('spam', 'eggs')))
+"(32.5, 40000, ('spam', 'eggs'))"
+这里有两种方法来写一个平方值和立方值的表：
+
+>>>
+>>> for x in range(1, 11):
+...     print(repr(x).rjust(2), repr(x*x).rjust(3), end=' ')
+...     # Note use of 'end' on previous line
+...     print(repr(x*x*x).rjust(4))
+...
+ 1   1    1
+ 2   4    8
+ 3   9   27
+ 4  16   64
+ 5  25  125
+ 6  36  216
+ 7  49  343
+ 8  64  512
+ 9  81  729
+10 100 1000
+
+>>> for x in range(1, 11):
+...     print('{0:2d} {1:3d} {2:4d}'.format(x, x*x, x*x*x))
+...
+ 1   1    1
+ 2   4    8
+ 3   9   27
+ 4  16   64
+ 5  25  125
+ 6  36  216
+ 7  49  343
+ 8  64  512
+ 9  81  729
+10 100 1000
+（注意在第一个示例中，每列之间的一个空格由print()自动添加：它总会在它的参数之间添加空格。)
+
+上面的例子演示了字符串对象的str.rjust()方法，它通过在左侧填充空格使字符串在给定宽度的列右对齐。类似的方法还有str.ljust()和str.center()。这些方法不会输出任何内容，它们只返回新的字符串。如果输入的字符串太长，字符串不会被截断，会完整输出。这将会使列不对齐，但是通常这比截断好，截断会导致不知道原值（如果你真的想要截断，可以加上一个切片操作，例如x.ljust(n)[:n]。)
+
+另外一种方法str.zfill()，它向数值字符串左侧填充零。该函数可以正确识别正负号：
+
+>>>
+>>> '12'.zfill(5)
+'00012'
+>>> '-3.14'.zfill(7)
+'-003.14'
+>>> '3.14159265359'.zfill(5)
+'3.14159265359'
+str.format()方法的基本用法如下所示：
+
+>>>
+>>> print('We are the {} who say "{}!"'.format('knights', 'Ni'))
+We are the knights who say "Ni!"
+字符串内部的花括号和字符（叫做格式字段）将被传递给str.format()方法的对象所替换。花括号中的数字可以用来引用传递给str.format()方法的对象的位置。
+
+>>>
+>>> print('{0} and {1}'.format('spam', 'eggs'))
+spam and eggs
+>>> print('{1} and {0}'.format('spam', 'eggs'))
+eggs and spam
+如果str.format()方法中用到关键字参数，那么它们的值通过参数的名称引用。
+
+>>>
+>>> print('This {food} is {adjective}.'.format(
+...       food='spam', adjective='absolutely horrible'))
+This spam is absolutely horrible.
+位置参数和关键字参数可以随意组合：
+
+>>>
+>>> print('The story of {0}, {1}, and {other}.'.format('Bill', 'Manfred',
+                                                       other='Georg'))
+The story of Bill, Manfred, and Georg.
+'!a'（运用ascii()）、'!s'（运用str()）和'!r'（运用repr()）可以用来在格式化之前转换相应的值：
+
+>>>
+>>> contents = 'eels'
+>>> print('My hovercraft is full of {}.'.format(contents))
+My hovercraft is full of eels.
+>>> print('My hovercraft is full of {!r}.'.format(contents))
+My hovercraft is full of 'eels'.
+字段名后允许可选的':'和格式指令。这允许更好地控制值是何种格式。下面的例子将 Pi 转为三位精度。
+
+>>>
+>>> import math
+>>> print('The value of PI is approximately {0:.3f}.'.format(math.pi))
+The value of PI is approximately 3.142.
+':'后面紧跟一个整数可以限定该字段的最小宽度。这在美化表格时很有用。
+
+>>>
+>>> table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 7678}
+>>> for name, phone in table.items():
+...     print('{0:10} ==> {1:10d}'.format(name, phone))
+...
+Jack       ==>       4098
+Dcab       ==>       7678
+Sjoerd     ==>       4127
+如果你有一个不想分裂的非常长的格式字符串，如果你通过名称而不是位置来格式化这个变量会更好一点。有个简单的方法，可以传入一个字典，然后使用'[]'访问。
+
+>>>
+>>> table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
+>>> print('Jack: {0[Jack]:d}; Sjoerd: {0[Sjoerd]:d}; '
+...       'Dcab: {0[Dcab]:d}'.format(table))
+Jack: 4098; Sjoerd: 4127; Dcab: 8637678
+这也可以用 ‘**’ 标志将这个字典以关键字参数的方式传入。
+
+>>>
+>>> table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
+>>> print('Jack: {Jack:d}; Sjoerd: {Sjoerd:d}; Dcab: {Dcab:d}'.format(**table))
+Jack: 4098; Sjoerd: 4127; Dcab: 8637678
+这种方式与内置函数vars()组合起来将更加有用，该函数返回一个包含所有局部变量的字典。
+
+关于str.format()完整的描述，请参见格式字符串语法。
+
+7.1.1. 旧式的字符串格式化
+% 也可以用来字符串格式化。它将左边类似sprintf()-风格的参数应用到右边的参数，然后返回这种格式化操作生成的字符串。例如：
+
+>>>
+>>> import math
+>>> print('The value of PI is approximately %5.3f.' % math.pi)
+The value of PI is approximately 3.142.
+printf-风格字符串格式化 一节中，可以找到更多的信息。
+
+7.2. 读写文件
+open()返回一个文件对象，最常见的用法带有两个参数：open(filename, mode)。
+
+>>>
+>>> f = open('workfile', 'w')
+参数1是含有文件名的字符串。参数2也是字符串，以几个字符说明该文件的使用方式。mode为'r'表示文件只读；w表示文件只进行写入（已存在的同名文件将被删掉）；'a'表示打开文件进行追加；写入到文件中的任何数据将自动添加到末尾。'r+'表示打开文件进行读取和写入。mode参数是可选的；如果省略，则默认为'r'。
+
+通常，文件以文本模式打开，它表示你从文件读取以及向文件写入的字符串是经过特定的编码的。如果没有指定编码，则默认值取操作系统的编码（参见open()）。在mode后面附加'b'将以二进制模式打开文件：现在数据以字节对象的形式读取和写入。这个模式应该用于所有不包含文本的文件。
+
+在文本模式中，读取的默认行为是将平台相关的换行（Unix上的\n、Windows上的\r\n）仅仅转换为\n。当在文本模式中写入时，默认的行为是将\n转换为平台相关的换行。这种对文件数据的修改对文本文件没有问题，但会损坏JPEG或EXE这样的二进制文件中的数据。使用二进制模式读写此类文件时要特别小心。
+
+7.2.1. 文件对象的方法
+本节中的示例将假设文件对象f已经创建。
+
+要读取文件内容，可以调用f.read(size) ，该方法读取若干数量的数据并以字符串（在文本模式中）或字节对象（在二进制模式中）形式返回它。size 是可选的数值参数。当 size被省略或为负数时，将会读取并返回整个文件；若文件大小是你机器内存的两倍，那是你自己的问题。否则，至多读取和返回 size 大小的字节数据。如果到了文件末尾，f.read() 会返回一个空字符串("")。
+
+>>>
+>>> f.read()
+'This is the entire file.\n'
+>>> f.read()
+''
+f.readline()从文件读取一行数据；字符串结尾会带有一个换行符 (\n) ，只有当文件最后一行没有以换行符结尾时才会省略。这样返回值就不会有混淆；如果f.readline()返回一个空字符串，那就表示已经达到文件的末尾，而如果返回一个只包含一个换行符的字符串'\n'，则表示遇到一个空行。
+
+>>>
+>>> f.readline()
+'This is the first line of the file.\n'
+>>> f.readline()
+'Second line of the file\n'
+>>> f.readline()
+''
+你可以循环遍历文件对象来读取文件中的每一行。这让内存高效，快速，并简化代码：
+
+>>>
+>>> for line in f:
+...     print(line, end='')
+...
+This is the first line of the file.
+Second line of the file
+如果你想要读取文件列表中所有行的数据，你也可以使用 list(f) 或 f.readlines()。
+
+f.write(string) 将 字符串 的内容写入到该文件，返回写入的字符数。
+
+>>>
+>>> f.write('This is a test\n')
+15
+其他类型的对象,在写入之前则需要转换成 字符串 （在文本模式下） 或 字节对象 （以二进制模式）
+
+>>>
+>>> value = ('the answer', 42)
+>>> s = str(value)  # convert the tuple to string
+>>> f.write(s)
+18
+f.tell()返回一个整数，代表文件对象在文件中的当前的位置，在二进制模式中该数值表示自文件开头到指针处的字节数，在文本模式中则是不准确的。
+
+若要更改该文件对象的位置，可以使用f.seek(offset, from_what)。位置由参考点加上offset 计算得来；参考点的选择则来自于from_what参数。当from_what的值为0，1，2 时，分别使用文件开头、当前文件位置和文件结尾作为参考点。from_what 可以省略，默认值为 0，表示以文件的开始作为参考点。
+
+>>>
+>>> f = open('workfile', 'rb+')
+>>> f.write(b'0123456789abcdef')
+16
+>>> f.seek(5)      # Go to the 6th byte in the file
+5
+>>> f.read(1)
+b'5'
+>>> f.seek(-3, 2)  # Go to the 3rd byte before the end
+13
+>>> f.read(1)
+b'd'
+在文本文件中（没有以b模式打开的文件），只允许从文件的开始查找（有个例外是查找到文件的末尾seek(0, 2)），而且offset只有是从f.tell()返回的值或者是0才是合法的。其它任何偏移 值都会产生未定义的行为。
+
+使用完一个文件后，调用f.close()可以关闭它并释放其占用的所有系统资源。调用f.close()后，再尝试使用该文件对象将自动失败。
+
+>>>
+>>> f.close()
+>>> f.read()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+ValueError: I/O operation on closed file
+处理文件对象时使用with关键字是很好的做法。这样做的好处在于文件用完后会自动关闭，即使过程中发生异常也没关系。它还比编写一个等同的try-finally语句要短很多：
+
+>>>
+>>> with open('workfile', 'r') as f:
+...     read_data = f.read()
+>>> f.closed
+True
+文件对象还有一些不太常用的方法，例如isatty()和truncate()；有关文件对象的完整指南，请参阅库参考手册。
+
+7.2.2. 使用json存储结构化数据
+从文件中读写字符串很容易。数值就要多费点儿周折，因为read ()方法只会返回字符串，应将其传入int()这样的函数，就可以将'123'这样的字符串转换为对应的数值123。当你想要保存更为复杂的数据类型，例如嵌套的列表和字典，手工解析和序列化它们将变得更复杂。
+
+好在用户不是非得自己编写和调试保存复杂数据类型的代码，Python 允许你使用常用的数据交换格式JSON（JavaScript Object Notation）。标准模块json可以接受 Python 数据结构，并将它们转换为字符串表示形式；此过程称为序列化。从字符串表示形式重新构建数据结构称为反序列化。在序列化和反序列化之间，表示对象的字符串可能已经存储在文件或数据中，或者通过网络连接发送到一些远程机器。
+
+注意JSON 格式经常用于现代应用程序中进行数据交换。许多程序员都已经熟悉它了，使它成为相互协作的一个不错的选择。
+如果你有一个对象x，你可以用简单的一行代码查看其JSON字符串表示形式：
+
+>>>
+>>> json.dumps([1, 'simple', 'list'])
+'[1, "simple", "list"]'
+dumps()函数的另外一个变体dump()，直接将对象序列化到一个文本文件。所以如果f是为写入而打开的一个文件对象，我们可以这样做：
+
+json.dump(x, f)
+为了重新解码对象，如果f是为读取而打开的文本文件对象 ：
+
+x = json.load(f)
+这种简单的序列化技术可以处理列表和字典，但序列化任意类实例为 JSON 需要一点额外的努力。Json模块的手册对此有详细的解释。
+
+请参阅pickle - pickle模块
+与JSON不同，pickle是一个协议，它允许任意复杂的Python对象的序列化。因此，它只能用于 Python 而不能用来与其他语言编写的应用程序进行通信。默认情况下它也是不安全的：如果数据由熟练的攻击者精心设计， 反序列化来自一个不受信任源的 pickle 数据可以执行任意代码。
+
+8. 错误和异常
+直到现在，我们还没有更多的提及错误信息，但是如果你真的尝试了前面的例子，也许你已经见到过一些。Python（至少）有两种错误很容易区分：语法错误 和异常。
+
+8.1. 语法错误
+语法错误（也称为解析错误）可能是您仍在学习Python时最常见的抱怨：
+
+>>>
+>>> while True print('Hello world')
+  File "<stdin>", line 1, in ?
+    while True print('Hello world')
+                   ^
+SyntaxError: invalid syntax
+语法分析器指出了出错的一行，并且在最先找到的错误的位置标记了一个小小的’箭头’。错误是由箭头前面的标记引起的（至少检测到是这样的）： 在这个例子中，检测到错误发生在函数 print()，因为在它之前缺少一个冒号（':'）文件名和行号会一并输出，所以如果运行的是一个脚本你就知道去哪里检查错误了。
+
+8.2. 异常
+即使一条语句或表达式在语法上是正确的，在运行它的时候，也有可能发生错误。在运行期间检测到的错误被称为异常 并且程序不会无条件地崩溃：你很快就会知道如何在 Python 程序中处理它们。然而大多数异常都不会被程序处理，导致产生类似下面的错误信息：
+
+>>>
+>>> 10 * (1/0)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+ZeroDivisionError: division by zero
+>>> 4 + spam*3
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+NameError: name 'spam' is not defined
+>>> '2' + 2
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+TypeError: Can't convert 'int' object to str implicitly
+最后一行的错误消息指示发生了什么事。异常有不同的类型，其类型会作为消息的一部分打印出来：在这个例子中的类型有ZeroDivisionError、NameError 和 TypeError.打印出来的异常类型的字符串就是内置的异常的名称。这对于所有内置的异常是正确的，但是对于用户自定义的异常就不一定了（尽管这是非常有用的惯例）。标准异常的名称都是内置的标识符（不是保留的关键字）。
+
+这一行最后一部分给出了异常的详细信息和引起异常的原因。
+
+错误信息的前面部分以堆栈回溯的形式显示了异常发生的上下文。通常调用栈里会包含源代码的行信息，但是来自标准输入的源码不会显示行信息。
+
+内置的异常 列出了内置的异常以及它们的含义。
+
+8.3. 处理异常
+可以通过编程来选择处理部分异常。看一下下面的例子，它会一直要求用户输入直到输入一个合法的整数为止，但允许用户中断这个程序（使用 Control-C 或系统支持的任何方法）；注意用户产生的中断引发的是 KeyboardInterrupt 异常。
+
+>>>
+>>> while True:
+...     try:
+...         x = int(input("Please enter a number: "))
+...         break
+...     except ValueError:
+...         print("Oops!  That was no valid number.  Try again...")
+...
+try 语句按以下方式工作。
+
+首先，执行 try 子句 （ try 和 except 关键字之间的语句）。
+如果未发生任何异常，忽略 except 子句 且 try 语句执行完毕。
+如果在 try 子句执行过程中发生异常，跳过该子句的其余部分。如果异常的类型与 except 关键字后面的异常名匹配, 则执行 except 子句，然后继续执行 try 语句之后的代码。
+如果异常的类型与 except 关键字后面的异常名不匹配，它将被传递给上层的 try 语句；如果没有找到处理这个异常的代码，它就成为一个 未处理异常 ，程序会终止运行并显示一条如上所示的信息。
+try 语句可能有多个子句，以指定不同的异常处理程序。不过至多只有一个处理程序将被执行。处理程序只处理发生在相应 try 子句中的异常，不会处理同一个 try 子句的其他处理程序中发生的异常。一个 except 子句可以用带括号的元组列出多个异常的名字，例如：
+
+... except (RuntimeError, TypeError, NameError):
+...     pass
+最后一个 except 子句可以省略异常名称，以当作通配符使用。使用这个非常小心，以这种方式很容易掩盖真正的编程错误！它还可以用来打印一条错误消息，然后重新引发异常 （让调用者也去处理这个异常）：
+
+import sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(s.strip())
+except OSError as err:
+    print("OS error: {0}".format(err))
+except ValueError:
+    print("Could not convert data to an integer.")
+except:
+    print("Unexpected error:", sys.exc_info()[0])
+    raise
+try ...except 语句有一个可选的 else 子句 ，其出现时，必须放在所有 except 子句的后面。如果需要在 try 语句没有抛出异常时执行一些代码，可以使用这个子句。例如：
+
+for arg in sys.argv[1:]:
+    try:
+        f = open(arg, 'r')
+    except IOError:
+        print('cannot open', arg)
+    else:
+        print(arg, 'has', len(f.readlines()), 'lines')
+        f.close()
+使用 else 子句比把额外的代码放在 try 子句中要好，因为它可以避免意外捕获不是由 try ... except 语句保护的代码所引发的异常。
+
+当异常发生时，它可能带有相关数据，也称为异常的参数。参数的有无和类型取决于异常的类型。
+
+except 子句可以在异常名之后指定一个变量。这个变量将绑定于一个异常实例，同时异常的参数将存放在 instance.args 中。为方便起见，异常实例定义了 __str__() ，因此异常的参数可以直接打印而不必引用 .args 。也可以在引发异常之前先实例化一个异常，然后向它添加任何想要的属性。
+
+>>>
+>>> try:
+...     raise Exception('spam', 'eggs')
+... except Exception as inst:
+...     print(type(inst))    # the exception instance
+...     print(inst.args)     # arguments stored in .args
+...     print(inst)          # __str__ allows args to be printed directly,
+...                          # but may be overridden in exception subclasses
+...     x, y = inst.args     # unpack args
+...     print('x =', x)
+...     print('y =', y)
+...
+<class 'Exception'>
+('spam', 'eggs')
+('spam', 'eggs')
+x = spam
+y = eggs
+对于未处理的异常，如果它含有参数，那么参数会作为异常信息的最后一部分打印出来。
+
+异常处理程序不仅能处理在try子句直接发生的异常，也能处理try子句调用的函数中（即使是间接地）发生的异常。例如：
+
+>>>
+>>> def this_fails():
+...     x = 1/0
+...
+>>> try:
+...     this_fails()
+... except ZeroDivisionError as err:
+...     print('Handling run-time error:', err)
+...
+Handling run-time error: int division or modulo by zero
+8.4. 抛出异常
+raise 语句允许程序员强行引发一个指定的异常。例如：
+
+>>>
+>>> raise NameError('HiThere')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+NameError: HiThere
+raise 的唯一参数指示要引发的异常。它必须是一个异常实例或异常类（从 Exception 派生的类）。
+
+如果你确定需要引发异常，但不打算处理它，一个简单形式的 raise 语句允许你重新引发异常：
+
+>>>
+>>> try:
+...     raise NameError('HiThere')
+... except NameError:
+...     print('An exception flew by!')
+...     raise
+...
+An exception flew by!
+Traceback (most recent call last):
+  File "<stdin>", line 2, in ?
+NameError: HiThere
+8.5. 用户定义的异常
+程序可以通过创建新的异常类来命名自己的异常（Python 类的更多内容请参见 类 ）。异常通常应该继承 Exception 类，直接继承或者间接继承都可以。
+
+异常类可以像其他类一样做任何事情，但是通常都会比较简单，只提供一些属性以允许异常处理程序获取错误相关的信息。创建一个能够引发几种不同错误的模块时，一个通常的做法是为该模块定义的异常创建一个基类，然后基于这个基类为不同的错误情况创建特定的子类：
+
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class InputError(Error):
+    """Exception raised for errors in the input.
+
+    Attributes:
+        expression -- input expression in which the error occurred
+        message -- explanation of the error
+    """
+
+    def __init__(self, expression, message):
+        self.expression = expression
+        self.message = message
+
+class TransitionError(Error):
+    """Raised when an operation attempts a state transition that's not
+    allowed.
+
+    Attributes:
+        previous -- state at beginning of transition
+        next -- attempted new state
+        message -- explanation of why the specific transition is not allowed
+    """
+
+    def __init__(self, previous, next, message):
+        self.previous = previous
+        self.next = next
+        self.message = message
+大多数异常的名字都以"Error"结尾，类似于标准异常的命名。
+
+很多标准模块中都定义了自己的异常来报告在它们所定义的函数中可能发生的错误。类 这一章给出了类的详细信息。
+
+8.6. 定义清理操作
+try 语句有另一个可选的子句，目的在于定义必须在所有情况下执行的清理操作。例如：
+
+>>>
+>>> try:
+...     raise KeyboardInterrupt
+... finally:
+...     print('Goodbye, world!')
+...
+Goodbye, world!
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "<stdin>", line 2, in ?
+不管有没有发生异常，在离开 try 语句之前总是会执行 finally 子句。当 try 子句中发生了一个异常，并且没有 except 字句处理（或者异常发生在 except 或 else 子句中），在执行完 finally 子句后将重新引发这个异常。try 语句由于 break 、contine 或return 语句离开时，同样会执行finally 子句。下面是一个更复杂些的例子：
+
+>>>
+>>> def divide(x, y):
+...     try:
+...         result = x / y
+...     except ZeroDivisionError:
+...         print("division by zero!")
+...     else:
+...         print("result is", result)
+...     finally:
+...         print("executing finally clause")
+...
+>>> divide(2, 1)
+result is 2.0
+executing finally clause
+>>> divide(2, 0)
+division by zero!
+executing finally clause
+>>> divide("2", "1")
+executing finally clause
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+  File "<stdin>", line 3, in divide
+TypeError: unsupported operand type(s) for /: 'str' and 'str'
+正如您所看到的，在任何情况下都会执行 finally 子句。由两个字符串相除引发的 TypeError 异常没有被 except子句处理，因此在执行 finally 子句后被重新引发。
+
+在真实的应用程序中， finally 子句用于释放外部资源（例如文件或网络连接），不管资源的使用是否成功。
+
+8.7. 预定义清理操作
+有些对象定义了在不需要该对象时的标准清理操作，无论该对象的使用是成功还是失败。看看下面的示例，它尝试打开一个文件并打印其内容到屏幕。
+
+for line in open("myfile.txt"):
+    print(line, end="")
+这段代码的问题就是这部分代码执行完之后它还会让文件在一段不确定的时间内保持打开状态。这在简单的脚本中没什么，但是在大型应用程序中可能是一个问题。with 语句可以确保像文件这样的对象总能及时准确地被清理掉。
+
+with open("myfile.txt") as f:
+    for line in f:
+        print(line, end="")
+
+9. 类
+与其他编程语言相比，Python 的类机制用最少的新的语法和语义引入了类。它是 C++ 和 Modula-3 类机制的混合。Python 的类提供了面向对象编程的所有标准功能： 类继承机制允许多重继承，派生类可以覆盖其基类的任意方法或嵌套类，方法能够以相同的名称调用基类中的方法。对象可以包含任意数量和种类的数据。就像模块一样，类也具有Python的动态特性：它们在运行时创建，并且可以在创建后进一步修改。
+
+用 C++ 术语来讲，通常情况下类成员（包括数据成员）是 公有 的（其它情况见下文 私有变量），所有的成员函数都是虚 的。和Modula-3一样，从它的方法中引用对象的成员没有简短的方法：方法函数是用明确的第一个参数来声明的，这个第一个参数代表对象，这个对象由调用隐含地提供。与 Smalltalk 一样，类本身也是对象。这给导入类和重命名类提供了语义上的合理性。与 C++ 和 Modula-3 不同，用户可以用内置类型作为基类进行扩展。此外，像 C++ 一样，类实例可以重定义大多数带有特殊语法的内置操作符（算术运算符、 下标等）。
+
+（由于没有统一的达成共识的术语，我会偶尔使用 SmallTalk 和 C++ 的术语。我比较喜欢用 Modula-3 的术语，因为比起 C++，Python 的面向对象语法更像它，但是我想很少有读者听说过它。）
+
+9.1. 名称和对象
+对象是单个的，多个名称（在多个范围中）可以绑定到同一个对象。这在其他语言中称为别名。第一眼看Python，这种特性并不讨喜，当处理不可变的基本类型（数字，字符串，元组）时可以安全地忽略。然而，它对于涉及可变对象（例如列表，字典和大多数其他类型）的Python代码的语义可能有令人惊讶的影响。这通常用于程序的本身的方便，因为别名在某些方面表现得像指针。例如，传递一个对象的开销是很小的，因为在实现上只是传递了一个指针；如果函数修改了参数传递的对象，调用者也将看到变化 —— 这就避免了类似 Pascal 中需要两个不同参数的传递机制。
+
+9.2. Python 作用域和命名空间
+在介绍类之前，首先我要告诉你一些有关 Python 作用域的的规则。用命名空间定义类有一些窍门，你需要知道范围和命名空间如何工作，以完全了解发生了什么。另外，这一切的知识对于任何高级 Python 程序员都非常有用。
+
+让我们从一些定义开始。
+
+命名空间 是从名称到对象的映射。大多数命名空间目前实现为Python字典，但通常不会以任何方式（性能除外）引人注意，并且它可能会在将来更改。以下有一些命名空间的例子：内置名称集（包括函数名列如 abs() 和内置异常的名称）；模块中的全局名称；函数调用中的局部名称。在某种意义上的一组对象的属性也形成一个命名空间。关于命名空间需要知道的重要一点是不同命名空间的名称绝对没有任何关系；例如，两个不同模块可以都定义函数 maximize 而不会产生混淆 —— 模块的使用者必须以模块名为前缀引用它们。
+
+顺便说一句，我使用 属性 这个词称呼点后面的任何名称 —— 例如，在表达式 z.real 中，real 是 z 对象的一个属性。严格地说，对模块中的名称的引用是属性引用：在表达式 modname.funcname 中， modname 是一个模块对象， funcname 是它的一个属性。在这种情况下，模块的属性和模块中定义的全局名称之间碰巧是直接的映射：它们共享同一命名空间 ！[1]
+
+属性可以是只读的也可以是可写的。在后一种情况下，可以对属性赋值。模块的属性都是可写的：你可以这样写 modname.the_answer = 42 。可写的属性也可以用 del 语句删除。例如， del modname.the_answer 将会删除对象 modname 中的 the_answer 属性。
+
+各个命名空间创建的时刻是不一样的，且有着不同的生命周期。包含内置名称的命名空间在 Python 解释器启动时创建，永远不会被删除。模块的全局命名空间在读入模块定义时创建；通常情况下，模块命名空间也会一直保存到解释器退出。在解释器最外层调用执行的语句，不管是从脚本文件中读入还是来自交互式输入，都被当作模块 __main__ 的一部分，所以它们有它们自己的全局命名空间。（内置名称实际上也存在于一个模块中，这个模块叫 builtins 。）
+
+函数的局部命名空间在函数调用时创建，在函数返回或者引发了一个函数内部没有处理的异常时删除。（实际上，用遗忘来形容到底发生了什么更为贴切。）当然，每个递归调用有它们自己的局部命名空间。
+
+作用域 是 Python 程序中可以直接访问一个命名空间的代码区域。这里的“直接访问”的意思是用没有前缀的引用在命名空间中找到的相应的名称。
+
+虽然作用域是静态确定的，但是使用它们时是动态的。程序执行过程中的任何时候，至少有三个嵌套的作用域，它们的命名空间是可以直接访问的：
+
+首先搜索最里面包含局部命名的作用域
+从最近的封闭范围开始搜索的任何封闭函数的作用域都包含非本地名称，但也包含非全局名称
+倒数第二个作用域包含当前模块的全局名称
+最后搜索的作用域是最外面包含内置命名的命名空间
+如果一个命名声明为全局的，那么对它的所有引用和赋值会直接搜索包含这个模块全局命名的作用域。如果要重新绑定最里层作用域之外的变量，可以使用 nonlocal 语句；如果不声明为nonlocal，这些变量将是只读的（对这样的变量赋值会在最里面的作用域创建一个 新的 局部变量，外部具有相同命名的那个变量不会改变）。
+
+通常情况下，局部作用域引用当前函数的本地命名。函数之外，局部作用域引用的命名空间与全局作用域相同：模块的命名空间。类定义在局部命名空间中创建了另一个命名空间。
+
+认识到作用域是由代码确定的是非常重要的：函数的全局作用域是函数的定义所在的模块的命名空间，与函数调用的位置或者别名无关。另一方面，命名的实际搜索过程是动态的，在运行时确定的——然而，Python 语言也在不断发展，以后有可能会成为静态的“编译”时确定，所以不要依赖动态解析！（事实上，本地变量是已经确定静态。）
+
+Python的一个特别之处在于——如果没有使用 global 语法——其赋值操作总是在最里层的作用域。赋值不会复制数据——只是将命名绑定到对象。删除也是如此： del x 只是从局部作用域的命名空间中删除命名 x 。事实上，所有引入新命名的操作都作用于局部作用域：特别是 import 语句和函数定义将模块名或函数绑定于局部作用域。
+
+global 语句可以用来指明某个特定的变量位于全局作用域并且应该在那里重新绑定； nonlocal 语句表示否定当前命名空间的作用域，寻找父函数的作用域并绑定对象。
+
+9.2.1. 作用域和命名空间示例
+下面这个示例演示如何访问不同作用域和命名空间，以及 global 和 nonlocal 如何影响变量的绑定：
+
+def scope_test():
+    def do_local():
+        spam = "local spam"
+
+    def do_nonlocal():
+        nonlocal spam
+        spam = "nonlocal spam"
+
+    def do_global():
+        global spam
+        spam = "global spam"
+
+    spam = "test spam"
+    do_local()
+    print("After local assignment:", spam)
+    do_nonlocal()
+    print("After nonlocal assignment:", spam)
+    do_global()
+    print("After global assignment:", spam)
+
+scope_test()
+print("In global scope:", spam)
+示例代码的输出为：
+
+After local assignment: test spam
+After nonlocal assignment: nonlocal spam
+After global assignment: nonlocal spam
+In global scope: global spam
+注意，local 的赋值（默认行为）没有改变 scope_test 对spam 的绑定。nonlocal 赋值改变了 scope_test 对 spam 的绑定， global 赋值改变了模块级别的绑定。
+
+你也可以看到在 global 语句之前没有对 spam 的绑定。
+
+9.3. 初识类
+类引入了少量的新语法、三种新对象类型和一些新语义。
+
+9.3.1. 类定义语法
+类定义的最简单形式如下所示：
+
+class ClassName:
+    <statement-1>
+    .
+    .
+    .
+    <statement-N>
+类的定义就像函数定义（ def 语句），要先执行才能生效。（你当然可以把它放进 if 语句的某一分支，或者一个函数的内部。）
+
+实际应用中，类定义包含的语句通常是函数定义，不过其它语句也是可以的而且有时还会很有用——后面我们会再回来讨论。类中的函数定义通常具有特定形式的参数列表，由方法的调用约定决定，这再次在后面解释。
+
+进入类定义部分后，会创建出一个新的命名空间，作为局部作用域——因此，所有的赋值成为这个新命名空间的局部变量。特别是这里的函数定义会绑定新函数的名字。
+
+类定义正常退出时，一个 类对象 也就创建了。基本上它是对类定义创建的命名空间进行了一个包装；我们在下一节将进一步学习类对象的知识。原始的局部作用域（类定义引入之前生效的那个）得到恢复，类对象在这里绑定到类定义头部的类名（例子中是 ClassName ）。
+
+9.3.2. 类对象
+类对象支持两种操作：属性引用和实例化。
+
+属性引用 使用的所有属性引用在 Python 中使用的标准语法： obj.name 。有效的属性名称是在该类的命名空间中的类对象被创建时的名称。因此，如果类定义看起来像这样：
+
+class MyClass:
+    """A simple example class"""
+    i = 12345
+
+    def f(self):
+        return 'hello world'
+那么 MyClass.i 和 MyClass.f 是有效的属性引用，分别返回一个整数和一个方法对象。也可以对类属性赋值，你可以通过给 MyClass.i 赋值来修改它。__doc__ 也是一个有效的属性，返回类的文档字符串： "A simple example class".
+
+类的实例化 使用函数的符号。可以假设类对象是一个不带参数的函数，该函数返回这个类的一个新的实例。例如（假设沿用上面的类）：
+
+x = MyClass()
+创建这个类的一个新 实例 ，并将该对象赋给局部变量 x.
+
+实例化操作（“调用”一个类对象）将创建一个空对象。很多类希望创建的对象可以自定义一个初始状态。因此类可以定义一个名为 __init__() 的特殊方法，像下面这样：
+
+def __init__(self):
+    self.data = []
+当类定义了 __init__() 方法，类的实例化会为新创建的类实例自动调用 __init__() 。所以在下面的示例中，可以获得一个新的、已初始化的实例：
+
+x = MyClass()
+当然， __init__() 方法可以带有参数，这将带来更大的灵活性。在这种情况下，类实例化操作的参数将传递给 __init__() 。例如，
+
+>>>
+>>> class Complex:
+...     def __init__(self, realpart, imagpart):
+...         self.r = realpart
+...         self.i = imagpart
+...
+>>> x = Complex(3.0, -4.5)
+>>> x.r, x.i
+(3.0, -4.5)
+9.3.3. 实例对象
+现在我们可以用实例对象做什么？能被实例对象理解的唯一操作是属性引用。有两种有效的属性名：数据属性和方法。
+
+数据属性 相当于 Smalltalk 中的"实例变量"或 C++ 中的"数据成员"。数据属性不需要声明；和局部变量一样，它们会在第一次给它们赋值时生成。例如，如果 x 是上面创建的 MyClass 的实例，下面的代码段将打印出值 16 而不会出现错误：
+
+x.counter = 1
+while x.counter < 10:
+    x.counter = x.counter * 2
+print(x.counter)
+del x.counter
+实例属性引用的另一种类型是方法。方法是"属于"一个对象的函数。（在 Python，方法这个术语不只针对类实例：其他对象类型也可以具有方法。例如，列表对象有 append、insert、remove、sort 方法等等。但是在后面的讨论中，除非明确说明，我们提到的方法特指类实例对象的方法。)
+
+实例对象的方法的有效名称依赖于它的类。根据定义，类中所有函数对象的属性定义了其实例中相应的方法。所以在我们的示例中， x.f 是一个有效的方法的引用，因为 MyClass.f 是一个函数，但 x.i 不是，因为 MyClass.i 不是一个函数。但 x.f 与 MyClass.f 也不是一回事 —— 它是一个 方法对象 ，不是一个函数对象。
+
+9.3.4. 方法对象
+通常情况下，方法在绑定之后被直接调用：
+
+x.f()
+在 MyClass 的示例中，这将返回字符串 'hello world' 。然而，也不是一定要直接调用方法： x.f 是一个方法对象，可以存储起来以后调用。例如：
+
+xf = x.f
+while True:
+    print(xf())
+会不断地打印 hello world 。
+
+调用方法时到底发生了什么？你可能已经注意到，上面 x.f() 的调用没有参数，即使 f() 函数的定义指定了一个参数。参数发生了什么？当然，一个函数需要一个参数却没有调用任何参数时，Python会引发一个异常，即使该参数没有实际使用...
+
+实际上，你可能已经猜到了答案：方法的特别之处在于实例对象被作为函数的第一个参数传给了函数。在我们的示例中，调用 x.f() 完全等同于 MyClass.f(x) 。一般情况下，以n 个参数的列表调用一个方法就相当于将方法所属的对象插入到列表的第一个参数的前面，然后以新的列表调用相应的函数。
+
+如果你还是不明白方法的工作原理，了解一下它的实现或许有帮助。引用非数据属性的实例属性时，会搜索它的类。如果这个命名确认为一个有效的函数对象类属性，就会将实例对象和函数对象封装进一个抽象对象：这就是方法对象。以一个参数列表调用方法对象时，它被重新拆封，用实例对象和原始的参数列表构造一个新的参数列表，然后函数对象调用这个新的参数列表。
+
+9.3.5. 类和实例变量
+一般来说，实例变量用于对每一个实例都是唯一的数据，类变量用于类的所有实例共享的属性和方法：
+
+class Dog:
+
+    kind = 'canine'         # class variable shared by all instances
+
+    def __init__(self, name):
+        self.name = name    # instance variable unique to each instance
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.kind                  # shared by all dogs
+'canine'
+>>> e.kind                  # shared by all dogs
+'canine'
+>>> d.name                  # unique to d
+'Fido'
+>>> e.name                  # unique to e
+'Buddy'
+正如在 名称和对象 讨论的， 可变 对象，例如列表和字典，的共享数据可能带来意外的效果。例如，以下代码中的trick列表不应用作类变量，因为所有Dog实例都将共享单个列表：
+
+class Dog:
+
+    tricks = []             # mistaken use of a class variable
+
+    def __init__(self, name):
+        self.name = name
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.add_trick('roll over')
+>>> e.add_trick('play dead')
+>>> d.tricks                # unexpectedly shared by all dogs
+['roll over', 'play dead']
+这个类的正确设计应该使用一个实例变量：
+
+class Dog:
+
+    def __init__(self, name):
+        self.name = name
+        self.tricks = []    # creates a new empty list for each dog
+
+    def add_trick(self, trick):
+        self.tricks.append(trick)
+
+>>> d = Dog('Fido')
+>>> e = Dog('Buddy')
+>>> d.add_trick('roll over')
+>>> e.add_trick('play dead')
+>>> d.tricks
+['roll over']
+>>> e.tricks
+['play dead']
+9.4. 补充说明
+数据属性会覆盖同名的方法属性；为了避免意外的命名冲突，这在大型程序中可能带来极难发现的 bug，使用一些约定来减少冲突的机会是明智的。可能的约定包括大写方法名称的首字母，使用一个唯一的小写的字符串（也许只是一个下划线）作为数据属性名称的前缀，或者方法使用动词而数据属性使用名词。
+
+数据属性可以被方法引用，也可以由一个对象的普通用户（“客户端”）使用。换句话说，类是不能用来实现纯抽象数据类型的。事实上，Python 中不可能强制隐藏数据——一切基于约定。（另一方面，如果需要，使用 C 编写的 Python 实现可以完全隐藏实现细节并控制对象的访问；这可以用来通过 C 语言扩展 Python。）
+
+客户应该谨慎的使用数据属性——客户可能通过随意使用他们的数据属性而使那些由方法维护的常量变得混乱。注意：只要能避免冲突，客户可以向一个实例对象添加他们自己的数据属性，而不会影响方法的正确性——再次强调，命名约定可以避免很多麻烦。
+
+从方法内部引用数据属性（或其他方法）并没有快捷方式。我觉得这实际上增加了方法的可读性：当浏览一个方法时，在局部变量和实例变量之间不会出现令人费解的情况。
+
+通常，方法的第一个参数称为 self 。这仅仅是一个约定：名字 self 对 Python 而言绝对没有任何特殊含义。但是请注意：如果不遵循这个约定，对其他的 Python 程序员而言你的代码可读性就会变差，而且有些类 查看 器程序也可能是遵循此约定编写的。
+
+类属性的任何函数对象都为那个类的实例定义了一个方法。函数定义代码不一定非得定义在类中：也可以将一个函数对象赋值给类中的一个局部变量。例如：
+
+# Function defined outside the class
+def f1(self, x, y):
+    return min(x, x+y)
+
+class C:
+    f = f1
+
+    def g(self):
+        return 'hello world'
+
+    h = g
+现在 f、g 和 h 都是类 C中引用函数对象的属性，因此它们都是 C 的实例的方法 —— h 完全等同于 g 。请注意，这种做法通常只会使阅读程序的人产生困惑。
+
+方法可以通过使用 self 参数的方法属性，调用其他方法：
+
+class Bag:
+    def __init__(self):
+        self.data = []
+
+    def add(self, x):
+        self.data.append(x)
+
+    def addtwice(self, x):
+        self.add(x)
+        self.add(x)
+方法可以像普通函数那样引用全局命名。与方法关联的全局作用域是包含这个方法的定义的模块（类）。（类本身永远不会作为全局作用域使用。）尽管很少有好的理由在方法中使用全局数据，全局作用域确有很多合法的用途：其一是方法可以调用导入全局作用域的函数和方法，也可以调用定义在其中的类和函数。通常，包含此方法的类也会定义在这个全局作用域，在下一节我们会了解为何一个方法要引用自己的类。
+
+每个值都是一个对象，因此每个值都有一个类（也称它的类型）。它存储为 object.__class__ 。
+
+9.5. 继承
+当然，一个语言如果没有支持继承特性不值得称作“类”。派生类定义的语法如下所示：
+
+class DerivedClassName(BaseClassName):
+    <statement-1>
+    .
+    .
+    .
+    <statement-N>
+BaseClassName 必须与派生类定义在一个作用域内。用其他任意表达式代替基类的名称也是允许的。这可以是有用的，例如，当基类定义在另一个模块中时：
+
+class DerivedClassName(modname.BaseClassName):
+派生类定义的执行过程和基类是相同的。当构建类对象时，将记住基类。这用于解析属性的引用：如果在类中找不到请求的属性，搜索会在基类中继续。如果基类本身是由别的类派生而来，这个规则会递归应用。
+
+派生类的实例化没有什么特殊之处： DerivedClassName() 创建类的一个新的实例。方法的引用按如下规则解析： 搜索对应的类的属性，必要时沿基类链逐级搜索，如果找到了函数对象这个方法引用就是合法的。
+
+派生类可以重写基类中的方法。因为方法调用同一个对象中的其它方法时没有特权，基类的方法调用同一个基类的方法时，可能实际上最终调用了派生类中的覆盖方法。（对于 C++ 程序员：Python 中的所有方法实际上都是 虚 的。）
+
+派生类中的覆盖方法可能是想要扩充而不是简单的替代基类中的重名方法。有一个简单的方法可以直接调用基类方法：只要调用 BaseClassName.methodname(self, arguments) 。有时这对于客户端也很有用。（要注意只有 BaseClassName 在同一全局作用域定义或导入时才能这样用。）
+
+Python 有两个用于继承的函数：
+
+使用 isinstance() 来检查实例类型： isinstance(obj, int) 只有 obj.__class__ 是 int 或者是从 int 派生的类时才为 True 。
+使用 issubclass() 来检查类的继承： issubclass(bool, int) 是 True 因为 bool 是 int.的子类。然而， issubclass(float, int) 为 False ，因为 float 不是 int 的子类。
+9.5.1. 多继承
+Python 也支持一种形式的多继承。具有多个基类的类定义如下所示：
+
+class DerivedClassName(Base1, Base2, Base3):
+    <statement-1>
+    .
+    .
+    .
+    <statement-N>
+对于大多数用途，在最简单的情况下，你可以认为继承自父类的属性搜索是从左到右的深度优先搜索，不会在同一个类中搜索两次，即使层次会有重叠。因此，如果在 DerivedClassName 中找不到属性，它搜索 Base1 ，然后（递归）基类中的 Base1 ，如果没有找到，它会搜索 Base2 ，依此类推。
+
+事实上要稍微复杂一些；为了支持合作调用 super() ，方法解析的顺序会动态改变。这种方法在某些其它多继承的语言中也有并叫做call-next-method，它比单继承语言中的super调用更强大。
+
+动态调整顺序是必要的，因为所有的多继承都会有一个或多个菱形关系(从最底部的类向上，至少会有一个父类可以通过多条路径访问到）。例如，所有的类都继承自 object ，所以任何多继承都会有多条路径到达 object。为了防止基类被重复访问，动态算法线性化搜索顺序，每个类都按从左到右的顺序特别指定了顺序，每个父类只调用一次，这是单调的（也就是说一个类被继承时不会影响它祖先的次序）。所有这些特性使得设计可靠并且可扩展的多继承类成为可能。有关详细信息，请参阅https://www.python.org/download/releases/2.3/mro/。
+
+9.6. 私有变量
+Python中并不存在所谓只能在对象内部才能访问的“私有”实例变量。然而，有一项大多数 Python 代码都遵循的习惯：带有下划线（例如_spam ）前缀的名称应被视为非公开的 API 的一部分（无论是函数、 方法还是数据成员）。它应被视为实现细节，如有更改，恕不另行通知。
+
+由于存在一种合理的类私有成员使用场景（例如为了避免名称与子类所定义名称的冲突），Python 对这种机制提供了简单的支持，即所谓“名称重整” （name mangling）。__spam 形式的任何标识符（前面至少两个下划线，后面至多一个下划线）将被替换为 _classname__spam， classname 是当前类的名字。这种替换是在不考虑标识符句法位置的情况下完成的，只要它出现在类的定义内即可。
+
+Name mangling 有利于子类重写父类的方法而不会破坏类内部的方法调用。例如：
+
+class Mapping:
+    def __init__(self, iterable):
+        self.items_list = []
+        self.__update(iterable)
+
+    def update(self, iterable):
+        for item in iterable:
+            self.items_list.append(item)
+
+    __update = update   # private copy of original update() method
+
+class MappingSubclass(Mapping):
+
+    def update(self, keys, values):
+        # provides new signature for update()
+        # but does not break __init__()
+        for item in zip(keys, values):
+            self.items_list.append(item)
+请注意名称改编的目的主要是避免发生意外；访问或者修改私有变量仍然是可能的。这在特殊情况下，例如调试的时候，还是有用的。
+
+注意传递给 exec 或 eval() 的代码没有考虑要将调用类的类名当作当前类；这类似于 global 语句的效果，影响只限于一起进行字节编译的代码。相同的限制适用于 getattr()、setattr() 和 delattr() ，以及直接引用 __dict__ 时。
+
+9.7. 零碎的说明
+有时候类似于Pascal 的"record" 或 C 的"struct"的数据类型很有用，它们把几个已命名的数据项目绑定在一起。一个空的类定义可以很好地做到：
+
+class Employee:
+    pass
+
+john = Employee()  # Create an empty employee record
+
+# Fill the fields of the record
+john.name = 'John Doe'
+john.dept = 'computer lab'
+john.salary = 1000
+某一段 Python 代码需要一个特殊的抽象数据结构的话，通常可以传入一个类来模拟该数据类型的方法。例如，如果你有一个用于从文件对象中格式化数据的函数，你可以定义一个带有 read() 和 readline() 方法的类，以此从字符串缓冲读取数据，然后将该类的对象作为参数传入前述的函数。
+
+实例的方法对象也有属性： m.__self__是具有方法 m() 的实例对象， m.__func__ 是方法的函数对象。
+
+9.8. 异常也是类
+用户定义的异常类也由类标识。利用这个机制可以创建可扩展的异常层次。
+
+raise 语句有两种新的有效的（语义上的）形式：
+
+raise Class
+
+raise Instance
+第一种形式中，Class 必须是 type 或者它的子类的一个实例。第一种形式是一种简写：
+
+raise Class()
+except 子句中的类如果与异常是同一个类或者是其基类，那么它们就是相容的（但是反过来是不行的——except子句列出的子类与基类是不相容的）。例如，下面的代码将按该顺序打印 B、 C、 D：
+
+class B(Exception):
+    pass
+class C(B):
+    pass
+class D(C):
+    pass
+
+for cls in [B, C, D]:
+    try:
+        raise cls()
+    except D:
+        print("D")
+    except C:
+        print("C")
+    except B:
+        print("B")
+请注意，如果except 子句的顺序倒过来 （except B 在最前面）。它就会打印 B，B，B —— 第一个匹配的异常被触发。
+
+打印一个异常类的错误信息时，先打印类名，然后是一个空格、一个冒号，然后是用内置函数 str() 将类转换得到的完整字符串。
+
+9.9. 迭代器
+现在你可能注意到大多数容器对象都可以用 for 遍历：
+
+for element in [1, 2, 3]:
+    print(element)
+for element in (1, 2, 3):
+    print(element)
+for key in {'one':1, 'two':2}:
+    print(key)
+for char in "123":
+    print(char)
+for line in open("myfile.txt"):
+    print(line, end='')
+这种访问风格清晰、 简洁又方便。迭代器的用法在 Python 中普遍而且统一。在后台，for语句调用容器对象的iter()方法。该函数返回一个定义了__next__()方法的迭代器对象，它一次访问容器中的一个元素。没有后续的元素时，__next__() 会引发StopIteration 异常，告诉 for循环停止迭代。你可以使用内建的 next() 来调用 __next__()，例子如下：
+
+>>>
+>>> s = 'abc'
+>>> it = iter(s)
+>>> it
+<iterator object at 0x00A1DB50>
+>>> next(it)
+'a'
+>>> next(it)
+'b'
+>>> next(it)
+'c'
+>>> next(it)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+    next(it)
+StopIteration
+看过迭代器协议背后的机制后，将很容易将迭代器的行为添加到你的类中。定义一个__iter__()方法，它返回一个带有__next__()的对象。如果类已经定义__next__()，那么__iter__()可以直接返回self：
+
+class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+>>>
+>>> rev = Reverse('spam')
+>>> iter(rev)
+<__main__.Reverse object at 0x00A1DB50>
+>>> for char in rev:
+...     print(char)
+...
+m
+a
+p
+s
+9.10. 生成器
+生成器是一种可以简单有效的创建迭代器的工具。它们像常规函数一样撰写，但是在需要返回数据时使用yield语句。每当对它调用next()，生成器从它上次停止的地方重新开始（它会记住所有的数据值和上次执行的语句）。以下示例演示了生成器可以非常简单地创建出来：
+
+def reverse(data):
+    for index in range(len(data)-1, -1, -1):
+        yield data[index]
+>>>
+>>> for char in reverse('golf'):
+...     print(char)
+...
+f
+l
+o
+g
+生成器能做到的任何事情，前一节所述的基于类的迭代器也能做到。生成器如此简洁归功于 __iter__() 和 __next__() 方法的自动创建。
+
+另一个关键特征是局部变量和执行状态在每次调用之间会自动保存。这让这个函数比使用如self.index和self.data这样的实例变量的方法更易于编写且更清晰。
+
+除了自动创建方法和保存程序状态外，当生成器终止时还会自动抛出StopIteration。结合这些特点，创建迭代器就和写一个普通函数一样简单，不需要多大的努力。
+
+9.11. 生成器表达式
+一些简单的生成器可以简洁地编码成表达式，语法类似于列表推导式，但是用圆括号而不是方括号。这些生成器表达式的设计是用于生成器被一个函数立刻用到的情形。生成器表达式，比完整的生成器定义紧凑但是功能上不及，比等价的列表推导式更节省内存方面。
+
+例子：
+
+>>>
+>>> sum(i*i for i in range(10))                 # sum of squares
+285
+
+>>> xvec = [10, 20, 30]
+>>> yvec = [7, 5, 3]
+>>> sum(x*y for x,y in zip(xvec, yvec))         # dot product
+260
+
+>>> from math import pi, sin
+>>> sine_table = {x: sin(x*pi/180) for x in range(0, 91)}
+
+>>> unique_words = set(word  for line in page  for word in line.split())
+
+>>> valedictorian = max((student.gpa, student.name) for student in graduates)
+
+>>> data = 'golf'
+>>> list(data[i] for i in range(len(data)-1, -1, -1))
+['f', 'l', 'o', 'g']
+脚注
+
+[1]	有一件事情除外。模块对象有秘密的只读属性__dict__，它返回用于实现模块命名空间的字典；__dict__是一个属性但不是一个全局的名称。显然，使用它违反了命名空间实现的抽象原则，应该被严格限制于调试中。
+
+
+10. 标准库概览
+10.1. 操作系统接口
+os 模块提供很多函数与操作系统进行交互︰
+
+>>>
+>>> import os
+>>> os.getcwd()      # Return the current working directory
+'C:\\Python35'
+>>> os.chdir('/server/accesslogs')   # Change current working directory
+>>> os.system('mkdir today')   # Run the command mkdir in the system shell
+0
+确保使用import os而不是from os import *。这样可以防止函数os.open()覆盖内建函数open()，两者之间的操作是很不同的。
+
+内建函数dir()和help()对os这样的大型模块提供交互式的帮助是很有用的：
+
+>>>
+>>> import os
+>>> dir(os)
+<returns a list of all module functions>
+>>> help(os)
+<returns an extensive manual page created from the module's docstrings>
+对于日常的文件和目录管理任务, 这 shutil 模块提供了一个简单好用的高级接口：
+
+>>>
+>>> import shutil
+>>> shutil.copyfile('data.db', 'archive.db')
+'archive.db'
+>>> shutil.move('/build/executables', 'installdir')
+'installdir'
+10.2. 文件通配符
+glob模块提供一个对目录中的文件进行通配符搜索的函数：
+
+>>>
+>>> import glob
+>>> glob.glob('*.py')
+['primes.py', 'random.py', 'quote.py']
+10.3. 命令行参数
+常见的实用程序脚本通常需要处理命令行参数。那些参数以列表的形式存储在sys 模块的 argv 属性中.例如下面在命令行中运行python demo.py one two three 的输出结果:
+
+>>>
+>>> import sys
+>>> print(sys.argv)
+['demo.py', 'one', 'two', 'three']
+getopt 模块处理sys.argv u时使用 getopt() 函数的约定。argparse 模块提供更加灵活和强大的命令行处理。
+
+10.4. 错误输出重定向和程序终止 
+sys 模块也有 stdin, stdout, stderr( 标准输入、 标准输出 和 标准错误) 的属性。即使在stdout被重定向时，后者也可以用于显示警告和错误信息：
+
+>>>
+>>> sys.stderr.write('Warning, log file not found starting a new one\n')
+Warning, log file not found starting a new one
+终止脚本的最直接方法是使用 sys.exit().
+
+10.5. 字符串模板匹配
+re 模块为高级字符串处理提供了正则表达式工具。对于复杂的匹配和操作，正则表达式提供了简洁、优化的解决方案：
+
+>>>
+>>> import re
+>>> re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
+['foot', 'fell', 'fastest']
+>>> re.sub(r'(\b[a-z]+) \1', r'\1', 'cat in the the hat')
+'cat in the hat'
+当只需要简单的功能时，最好使用字符串方法，因为它们更容易阅读和调试：
+
+>>>
+>>> 'tea for too'.replace('too', 'two')
+'tea for two'
+10.6. 数学
+math模块提供基于c库函数的浮点运算.
+
+>>>
+>>> import math
+>>> math.cos(math.pi / 4)
+0.70710678118654757
+>>> math.log(1024, 2)
+10.0
+random 的模块提供了进行随机选择的工具︰
+
+>>>
+>>> import random
+>>> random.choice(['apple', 'pear', 'banana'])
+'apple'
+>>> random.sample(range(100), 10)   # sampling without replacement
+[30, 83, 16, 4, 8, 81, 41, 50, 18, 33]
+>>> random.random()    # random float
+0.17970987693706186
+>>> random.randrange(6)    # random integer chosen from range(6)
+4
+statistics 模块计算数值数据的基本统计特性 （均值、 中位数、 方差，等）。e :
+
+>>>
+>>> import statistics
+>>> data = [2.75, 1.75, 1.25, 0.25, 0.5, 1.25, 3.5]
+>>> statistics.mean(data)
+1.6071428571428572
+>>> statistics.median(data)
+1.25
+>>> statistics.variance(data)
+1.3720238095238095
+SciPy 项目 https://scipy.org 有数值计算的许多其他模块。
+
+10.7. 互联网访问（3.5.2urllib中无request 属性）
+有很多的模块用于访问互联网和处理的互联网协议。最简单的两个是用于网络访问的 urllib.request 和用于发送邮件的 smtplib
+
+>>>
+>>> from urllib.request import urlopen
+>>> with urlopen('http://tycho.usno.navy.mil/cgi-bin/timer.pl') as response:
+...     for line in response:
+...         line = line.decode('utf-8')  # Decoding the binary data to text.
+...         if 'EST' in line or 'EDT' in line:  # look for Eastern Time
+...             print(line)
+
+<BR>Nov. 25, 09:43:32 PM EST
+
+>>> import smtplib
+>>> server = smtplib.SMTP('localhost')
+>>> server.sendmail('soothsayer@example.org', 'jcaesar@example.org',
+... """To: jcaesar@example.org
+... From: soothsayer@example.org
+...
+... Beware the Ides of March.
+... """)
+>>> server.quit()
+（请注意第二个示例需要在本地主机上运行邮件服务器）。
+
+10.8. 日期和时间
+datetime模块提供了处理日期和时间的简单和复杂的方法。支持日期和时间算法的同时，实现的重点放在更有效的处理和格式化输出。该模块还支持处理时区。
+
+>>>
+>>> # dates are easily constructed and formatted
+>>> from datetime import date
+>>> now = date.today()
+>>> now
+datetime.date(2003, 12, 2)
+>>> now.strftime("%m-%d-%y. %d %b %Y is a %A on the %d day of %B.")
+'12-02-03. 02 Dec 2003 is a Tuesday on the 02 day of December.'
+
+>>> # dates support calendar arithmetic
+>>> birthday = date(1964, 7, 31)
+>>> age = now - birthday
+>>> age.days
+14368
+10.9. 数据压缩
+通常的数据归档和压缩格式由以下模块直接支持，包括：zlib，gzip，bz2，lzma zipfile和tarfile。
+
+>>>
+>>> import zlib
+>>> s = b'witch which has which witches wrist watch'
+>>> len(s)
+41
+>>> t = zlib.compress(s)
+>>> len(t)
+37
+>>> zlib.decompress(t)
+b'witch which has which witches wrist watch'
+>>> zlib.crc32(s)
+226805979
+10.10. 性能测量
+一些 Python 用户对同一问题的不同解决方法之间的性能差异深有兴趣。Python 提供了的一个度量工具可以立即解决这些问题。
+
+例如，使用元组封装和拆封功能而不是传统的方法来交换参数可能会更吸引人。timeit模块能够快速演示一个适度的性能优势：
+
+>>>
+>>> from timeit import Timer
+>>> Timer('t=a; a=b; b=t', 'a=1; b=2').timeit()
+0.57535828626024577
+>>> Timer('a,b = b,a', 'a=1; b=2').timeit()
+0.54962537085770791
+与timeit的精细粒度相对比，profile and pstats 模块提供了识别时间跨度较大的代码的工具。
+
+10.11. 质量控制
+开发高质量软件的方法之一是为每一个函数编写测试代码，并且在开发过程中经常性的运行这些测试代码。
+
+doctest模块为 扫描模块 和 验证测试 提供了一个嵌入程序文档中的工具。测试的构造像一个把结果剪切并粘贴到文档字符串的典型调用一样简单。通过用户提供的例子，它发展了文档，允许 doctest 模块确认代码的结果是否与文档一致：
+
+def average(values):
+    """Computes the arithmetic mean of a list of numbers.
+
+    >>> print(average([20, 30, 70]))
+    40.0
+    """
+    return sum(values) / len(values)
+
+import doctest
+doctest.testmod()   # automatically validate the embedded tests
+unittest模块并不像doctest模块那么轻松，但它允许在单独的文件中维护一组更全面的测试：
+
+import unittest
+
+class TestStatisticalFunctions(unittest.TestCase):
+
+    def test_average(self):
+        self.assertEqual(average([20, 30, 70]), 40.0)
+        self.assertEqual(round(average([1, 5, 7]), 1), 4.3)
+        with self.assertRaises(ZeroDivisionError):
+            average([])
+        with self.assertRaises(TypeError):
+            average(20, 30, 70)
+
+unittest.main()  # Calling from the command line invokes all tests
+10.12. Batteries Included
+Python 有"Batteries Included"的哲学。这最好是通过其较大的文件包的先进和强大功能。例如：
+
+xmlrpc.client和xmlrpc.server模块使得实现远程过程调用成为一个非常简单的任务。尽管模块名称包含XML，但不需要直接了解或处理XML。
+email包是用于管理电子邮件（包括MIME和其他基于RFC 2822的邮件文档）的库。与实际发送和接收邮件的smtplib和poplib不同，email包有一个完整的工具集，用于构建或解码复杂的邮件结构（包括附件）和实现互联网编码和头协议。
+json包为解析这种流行的数据交换格式提供了强大的支持。csv模块支持以逗号分隔值格式直接读取和写入文件，通常由数据库和电子表格支持。XML处理由xml.etree.ElementTree，xml.dom和xml.sax包支持。这些模块和包一起大大简化了 Python 应用程序和其他工具之间的数据交换。
+sqlite3模块是SQLite数据库库的包装器，提供可以使用稍微非标准的SQL语法进行更新和访问的持久性数据库。
+国际化由许多模块支持，包括gettext、locale和编解码器包。
+
+11. 标准库概览 – Part II
+第二部分提供了更高级的模块用来支持专业编程的需要。这些模块很少出现在小型的脚本里。
+
+11.1. 输出格式化
+reprlib 模块提供了一个用来缩写显示大型或深层嵌套容器的 定制版repr() 。
+
+>>>
+>>> import reprlib
+>>> reprlib.repr(set('supercalifragilisticexpialidocious'))
+"{'a', 'c', 'd', 'e', 'f', 'g', ...}"
+pprint模块为 打印对解释器可读的 内置和用户自定义的对象 提供了更复杂控制方式.当结果超过一行时，这个"漂亮的打印机"将添加分行符和缩进，以更清楚地显示数据结构：
+
+>>>
+>>> import pprint
+>>> t = [[[['black', 'cyan'], 'white', ['green', 'red']], [['magenta',
+...     'yellow'], 'blue']]]
+...
+>>> pprint.pprint(t, width=30)
+[[[['black', 'cyan'],
+   'white',
+   ['green', 'red']],
+  [['magenta', 'yellow'],
+   'blue']]]
+textwrap模块使文本内容的段落格式适应 给定的屏幕宽度:
+
+>>>
+>>> import textwrap
+>>> doc = """The wrap() method is just like fill() except that it returns
+... a list of strings instead of one big string with newlines to separate
+... the wrapped lines."""
+...
+>>> print(textwrap.fill(doc, width=40))
+The wrap() method is just like fill()
+except that it returns a list of strings
+instead of one big string with newlines
+to separate the wrapped lines.
+locale 模块访问一种特定格式的数据库.local 模块的format函数 的grouping[分组]属性 直接提供一种用 组分隔符 格式化数字的方式:
+
+>>>
+>>> import locale
+>>> locale.setlocale(locale.LC_ALL, 'English_United States.1252')
+'English_United States.1252'
+>>> conv = locale.localeconv()          # get a mapping of conventions
+>>> x = 1234567.8
+>>> locale.format("%d", x, grouping=True)
+'1,234,567'
+>>> locale.format_string("%s%.*f", (conv['currency_symbol'],
+...                      conv['frac_digits'], x), grouping=True)
+'$1,234,567.80'
+11.2. 模板化 
+string 模板包含一个 拥有简化语法适用于客户端用户编辑的 通用的 Template 类.这允许用户自定义他们的应用程序无需修改应用程序。
+
+格式是使用由 $ 与有效的 Python 标识符（字母 数字字符和下划线） 命名的占位符.占位符周围的大括号允许它使用更多的字母 数字字符 并且中间没有空格。写 $$ 创建一个单一的转义的 $ :
+
+>>>
+>>> from string import Template
+>>> t = Template('${village}folk send $$10 to $cause.')
+>>> t.substitute(village='Nottingham', cause='the ditch fund')
+'Nottinghamfolk send $10 to the ditch fund.'
+当字典或关键字参数中没有提供 占位符(需要的变量值) 时 substitute()方法将会抛出 KeyError.对于邮件合并样式的应用程序来说,safe_substitute()方法可能更合适, 因为用户提供的数据可能不完整,而safe_substitute方法将不会处理数据丢失了的占位符.
+
+>>>
+>>> t = Template('Return the $item to $owner.')
+>>> d = dict(item='unladen swallow')
+>>> t.substitute(d)
+Traceback (most recent call last):
+  ...
+KeyError: 'owner'
+>>> t.safe_substitute(d)
+'Return the unladen swallow to $owner.'
+Template 类的子类可以指定自定义的分隔符。例如，图像浏览器的批量命名工具可能选用百分号作为表示当前日期、图像 序列号或文件格式的占位符：
+
+>>>
+>>> import time, os.path
+>>> photofiles = ['img_1074.jpg', 'img_1076.jpg', 'img_1077.jpg']
+>>> class BatchRename(Template):
+...     delimiter = '%'
+>>> fmt = input('Enter rename style (%d-date %n-seqnum %f-format):  ')
+Enter rename style (%d-date %n-seqnum %f-format):  Ashley_%n%f
+
+>>> t = BatchRename(fmt)
+>>> date = time.strftime('%d%b%y')
+>>> for i, filename in enumerate(photofiles):
+...     base, ext = os.path.splitext(filename)
+...     newname = t.substitute(d=date, n=i, f=ext)
+...     print('{0} --> {1}'.format(filename, newname))
+
+img_1074.jpg --> Ashley_0.jpg
+img_1076.jpg --> Ashley_1.jpg
+img_1077.jpg --> Ashley_2.jpg
+模板的另一个应用是把多样的输出格式细节从程序逻辑中分类出来。这使它能够替代用户的 XML 文件、 纯文本报告和 HTML 网页报表。
+
+11.3. 使用二进制文件记录数据布局
+struct 模块提供了 pack() 和 unpack() 方法来处理可变长度的二进制记录格式。下面的示例演示如何遍历一个 ZIP 文件的标头信息而无需使用 zipfile 模块。包代码"H" 和 "I"分别表示2个字节和4个字节的无符号数字。"<"表示使用标准大小和小端模式。
+
+import struct
+
+with open('myfile.zip', 'rb') as f:
+    data = f.read()
+
+start = 0
+for i in range(3):                      # show the first 3 file headers
+    start += 14
+    fields = struct.unpack('<IIIHH', data[start:start+16])
+    crc32, comp_size, uncomp_size, filenamesize, extra_size = fields
+
+    start += 16
+    filename = data[start:start+filenamesize]
+    start += filenamesize
+    extra = data[start:start+extra_size]
+    print(filename, hex(crc32), comp_size, uncomp_size)
+
+    start += extra_size + comp_size     # skip to the next header
+11.4. 多线程
+线程是一种解耦非顺序依赖任务的技术。当其他任务在后台运行时，线程可以用来提高应用程序接受用户输入操作的响应能力。一个相关的使用场景是 I/O 操作与另一个线程中的计算并行执行。
+
+下面的代码演示了当主程序在运行的同时，高层的 threading 模块可以在后台执行任务。
+
+import threading, zipfile
+
+class AsyncZip(threading.Thread):
+    def __init__(self, infile, outfile):
+        threading.Thread.__init__(self)
+        self.infile = infile
+        self.outfile = outfile
+
+    def run(self):
+        f = zipfile.ZipFile(self.outfile, 'w', zipfile.ZIP_DEFLATED)
+        f.write(self.infile)
+        f.close()
+        print('Finished background zip of:', self.infile)
+
+background = AsyncZip('mydata.txt', 'myarchive.zip')
+background.start()
+print('The main program continues to run in foreground.')
+
+background.join()    # Wait for the background task to finish
+print('Main program waited until background was done.')
+多线程应用程序的最主要挑战是协调线程间共享的数据或其他资源。为此目的，该线程模块提供了许多同步原语包括锁、 事件、 条件变量和信号量。
+
+尽管这些工具很强大，很小的设计错误也可能导致很难复现的问题。因此，任务协调的首选方法是将所有对某个资源的访问集中在单个线程中，然后使用queue模块向该线程提供来自其他线程的请求。使用队列对象进行线程间通信和协调的应用程序更易于设计，更易于阅读和更可靠。
+
+11.5. 日志
+logging模块提供了一个全功能和灵活的日志系统。最简单的，日志消息发送到文件或sys.stderr：
+
+import logging
+logging.debug('Debugging information')
+logging.info('Informational message')
+logging.warning('Warning:config file %s not found', 'server.conf')
+logging.error('Error occurred')
+logging.critical('Critical error -- shutting down')
+这将生成以下输出：
+
+WARNING:root:Warning:config file server.conf not found
+ERROR:root:Error occurred
+CRITICAL:root:Critical error -- shutting down
+默认情况下，信息和调试消息被压制并输出到标准错误。其他输出选项包括将消息通过email、 datagrams、sockets发送，或者发送到 HTTP 服务器。新过滤器可以根据消息优先级选择不同的路由：DEBUG、INFO、WARNING，ERROR和CRITICAL。
+
+日志系统可以直接在 Python 代码中定制，也可以不经过应用程序直接在一个用户可编辑的配置文件中加载。
+
+11.6. 弱引用
+Python执行自动内存管理（大多数对象采用引用计数和垃圾回收以消除循环）。在最后一个引用消失后，内存会立即释放。
+
+这个方式对大多数应用程序工作良好，但是有时候会需要跟踪对象，只要它们还被其它地方所使用。不幸的是，只是跟踪它们会创建一个引用，这个引用会一直存在。weakref模块提供了用于跟踪对象的工具，而无需创建引用。当不再需要该对象时，它会自动从 weakref 表中删除并且会为 weakref 对象触发一个回调。典型的应用包括缓存创建的时候需要很大开销的对象：
+
+>>>
+>>> import weakref, gc
+>>> class A:
+...     def __init__(self, value):
+...         self.value = value
+...     def __repr__(self):
+...         return str(self.value)
+...
+>>> a = A(10)                   # create a reference
+>>> d = weakref.WeakValueDictionary()
+>>> d['primary'] = a            # does not create a reference
+>>> d['primary']                # fetch the object if it is still alive
+10
+>>> del a                       # remove the one reference
+>>> gc.collect()                # run garbage collection right away
+0
+>>> d['primary']                # entry was automatically removed
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+    d['primary']                # entry was automatically removed
+  File "C:/python35/lib/weakref.py", line 46, in __getitem__
+    o = self.data[key]()
+KeyError: 'primary'
+11.7. 使用列表的工具
+很多数据结构使用内置列表类型就可以满足需求。然而，有时需要其它具有不同性能的替代实现。
+
+array 模块提供了 array()对象，这个对象像列表一样，它只存储相似的数据并且更加简洁。以下示例显示存储为两个字节无符号二进制数（类型代码“H”）的数字数组，而不是每个条目通常是16个字节的Python int对象的常规列表：
+
+>>>
+>>> from array import array
+>>> a = array('H', [4000, 10, 700, 22222])
+>>> sum(a)
+26932
+>>> a[1:3]
+array('H', [10, 700])
+collections 模块提供了一个 deque()对象，像list但是拥有从左边更快的赋值速度和读取速度，但是从中间检索会更慢。这些对象非常适合实现队列和广度优先的树搜索：
+
+>>>
+>>> from collections import deque
+>>> d = deque(["task1", "task2", "task3"])
+>>> d.append("task4")
+>>> print("Handling", d.popleft())
+Handling task1
+unsearched = deque([starting_node])
+def breadth_first_search(unsearched):
+    node = unsearched.popleft()
+    for m in gen_moves(node):
+        if is_goal(m):
+            return m
+        unsearched.append(m)
+除了列表实现方式可供选择 , 这个库还提供了其他工具，例如带有操作排序列表方法的bisect 模块：
+
+>>>
+>>> import bisect
+>>> scores = [(100, 'perl'), (200, 'tcl'), (400, 'lua'), (500, 'python')]
+>>> bisect.insort(scores, (300, 'ruby'))
+>>> scores
+[(100, 'perl'), (200, 'tcl'), (300, 'ruby'), (400, 'lua'), (500, 'python')]
+heapq模块提供了基于常规列表实现堆的功能。最小的值总是保持在第零个位置。这对于需要循环访问最小元素，但是不想运行完整列表排序的应用非常有用：
+
+>>>
+>>> from heapq import heapify, heappop, heappush
+>>> data = [1, 3, 5, 7, 9, 2, 4, 6, 8, 0]
+>>> heapify(data)                      # rearrange the list into heap order
+>>> heappush(data, -5)                 # add a new entry
+>>> [heappop(data) for i in range(3)]  # fetch the three smallest entries
+[-5, 0, 1]
+11.8. 十进制浮点算术
+decimal模块提供了用于十进制浮点运算的Decimal数据类型。与内置的float二进制浮点的实现相比，该类特别有用
+
+财务应用程序和其他用途，需要精确的十进制表示形式，
+控制精度，
+对符合法律或法规要求，舍入的控制
+跟踪有效小数位
+用户希望计算结果与手工计算相符的应用程序。
+例如，使用十进制浮点和二进制浮点来计算70%电话费的 5%税所得的结果是不同的。在将结果四舍五入到最接近的百分数时差异变得显著：
+
+>>>
+>>> from decimal import *
+>>> round(Decimal('0.70') * Decimal('1.05'), 2)
+Decimal('0.74')
+>>> round(.70 * 1.05, 2)
+0.73
+Decimal结果保留结尾的零，从具有两个有效数字的乘数自动推断四个有效数字。通过模拟笔算，避免了当二进制浮点表示十进制数时可能出现的精度问题。
+
+精确的结果使得 Decimal 类能够执行不适合二进制浮点的模运算和数值比较：
+
+>>>
+>>> Decimal('1.00') % Decimal('.10')
+Decimal('0.00')
+>>> 1.00 % 0.10
+0.09999999999999995
+
+>>> sum([Decimal('0.1')]*10) == Decimal('1.0')
+True
+>>> sum([0.1]*10) == 1.0
+False
+decimal模块提供具有所需精度的算术操作：
+
+>>>
+>>> getcontext().prec = 36
+>>> Decimal(1) / Decimal(7)
+Decimal('0.142857142857142857142857142857142857')
+
+
